@@ -1,0 +1,369 @@
+{
+  "curriculumYear": 2025,
+  "major": "컴퓨터공학부",
+  "terms": [
+    {
+      "grade": 1,
+      "semester": 1,
+      "courses": [
+        {
+          "code": "DD848",
+          "name": "AI컴퓨터공학부전공및진로탐색",
+          "credits": 1,
+          "category": "전공필수"
+        },
+        {
+          "code": "DD032",
+          "name": "C프로그래밍기초",
+          "credits": 3,
+          "category": "전공선택"
+        }
+      ]
+    },
+    {
+      "grade": 1,
+      "semester": 2,
+      "courses": [
+        {
+          "code": "DD801",
+          "name": "C프로그래밍",
+          "credits": 3,
+          "category": "전공선택"
+        },
+        {
+          "code": "DD860",
+          "name": "심화프로그래밍",
+          "credits": 3,
+          "category": "전공선택"
+        }
+      ]
+    },
+
+    {
+      "grade": 2,
+      "semester": 1,
+      "courses": [
+        {
+          "code": "CS343",
+          "name": "자료구조론",
+          "credits": 3,
+          "category": "전공선택"
+        },
+        {
+          "code": "EF624",
+          "name": "컴퓨터구조",
+          "credits": 3,
+          "category": "전공선택"
+        },
+        {
+          "code": "DD017",
+          "name": "이산수학",
+          "credits": 3,
+          "category": "전공선택"
+        },
+        {
+          "code": "DD750",
+          "name": "자바프로그래밍",
+          "credits": 3,
+
+          "category": "전공선택"
+        },
+        {
+          "code": "DD725",
+          "name": "웹프로그래밍",
+          "credits": 3,
+
+          "category": "전공선택"
+        }
+      ]
+    },
+    {
+      "grade": 2,
+      "semester": 2,
+      "courses": [
+        {
+          "code": "DD015",
+          "name": "객체지향프로그래밍",
+          "credits": 3,
+
+          "category": "전공선택"
+        },
+        {
+          "code": "DD727",
+          "name": "데이터베이스",
+          "credits": 3,
+
+          "category": "전공선택"
+        },
+        {
+          "code": "DD861",
+          "name": "시스템소프트웨어설계",
+          "credits": 3,
+
+          "category": "전공선택"
+        },
+        {
+          "code": "DD851",
+          "name": "오토마타와계산이론",
+          "credits": 3,
+
+          "category": "전공선택"
+        },
+        {
+          "code": "EF656",
+          "name": "컴퓨터네트워크",
+          "credits": 3,
+
+          "category": "전공선택"
+        },
+        {
+          "code": "DD847",
+          "name": "오픈소스SW실습",
+          "credits": 3,
+
+          "category": "전공선택"
+        }
+      ]
+    },
+    {
+      "grade": 3,
+      "semester": 1,
+      "courses": [
+        {
+          "code": "DD852",
+          "name": "알고리즘설계및분석",
+          "credits": 3,
+
+          "category": "전공선택"
+        },
+        {
+          "code": "DD316",
+          "name": "소프트웨어공학",
+          "credits": 3,
+
+          "category": "전공선택"
+        },
+        {
+          "code": "DD313",
+          "name": "인공지능",
+          "credits": 3,
+
+          "category": "전공선택"
+        },
+        {
+          "code": "DD724",
+          "name": "운영체제",
+          "credits": 3,
+
+          "category": "전공선택"
+        },
+        {
+          "code": "DD862",
+          "name": "정보보호",
+          "credits": 3,
+
+          "category": "전공선택"
+        },
+        {
+          "code": "DD709",
+          "name": "컴퓨터그래픽스",
+          "credits": 3,
+
+          "category": "전공선택"
+        }
+      ]
+    },
+
+    {
+      "grade": 3,
+      "semester": 2,
+      "courses": [
+        {
+          "code": "DD850",
+          "name": "AI컴퓨터공학부기초캡스톤디자인",
+          "credits": 3,
+
+          "category": "전공필수"
+        },
+        {
+          "code": "DD842",
+          "name": "컴퓨터공학전공개별진로연구",
+          "credits": 1,
+
+          "category": ""
+        },
+        {
+          "code": "DD843",
+          "name": "프로세스공학",
+          "credits": 3,
+
+          "category": "전공선택"
+        },
+        {
+          "code": "DD812",
+          "name": "지능웹설계",
+          "credits": 3,
+
+          "category": "전공선택"
+        },
+        {
+          "code": "DD811",
+          "name": "머신러닝",
+          "credits": 3,
+
+          "category": ""
+        },
+        {
+          "code": "DD751",
+          "name": "내장형시스템",
+          "credits": 3,
+
+          "category": "전공선택"
+        },
+        {
+          "code": "DD755",
+          "name": "분산및병렬처리",
+          "credits": 3,
+
+          "category": "전공선택"
+        },
+        {
+          "code": "DD814",
+          "name": "네트워크보안",
+          "credits": 3,
+
+          "category": "전공선택"
+        },
+        {
+          "code": "DD824",
+          "name": "블록체인플랫폼",
+          "credits": 3,
+
+          "category": ""
+        },
+        {
+          "code": "EC748",
+          "name": "데이터마이닝",
+          "credits": 3,
+
+          "category": ""
+        },
+        {
+          "code": "DD036",
+          "name": "컴퓨터비전",
+          "credits": 3,
+
+          "category": ""
+        }
+      ]
+    },
+    {
+      "grade": 4,
+      "semester": 1,
+      "courses": [
+        {
+          "code": "DD731",
+          "name": "모바일프로그램밍",
+          "credits": 3,
+
+          "category": "전공선택"
+        },
+        {
+          "code": "DD849",
+          "name": "AI컴퓨터공학부심화캡스톤디자인",
+          "credits": 3,
+
+          "category": "전공필수"
+        },
+        {
+          "code": "DD033",
+          "name": "네트워크시스템프로그래밍",
+          "credits": 3,
+
+          "category": ""
+        },
+        {
+          "code": "DD826",
+          "name": "차세대프로그래밍언어",
+          "credits": 3,
+
+          "category": ""
+        },
+        {
+          "code": "DD863",
+          "name": "마이크로프로세서활용",
+          "credits": 3,
+
+          "category": ""
+        },
+        {
+          "code": "DD864",
+          "name": "빅데이터프로그래밍",
+          "credits": 3,
+
+          "category": ""
+        },
+        {
+          "code": "DD856",
+          "name": "블록체인Web3",
+          "credits": 3,
+          "category": ""
+        },
+        {
+          "code": "DD865",
+          "name": "시스템보안",
+          "credits": 3,
+          "category": ""
+        }
+      ]
+    },
+    {
+      "grade": 4,
+      "semester": 2,
+      "courses": [
+        {
+          "code": "DD831",
+          "name": "컴퓨터공학특강",
+          "credits": 3,
+
+          "category": "전공선택"
+        },
+        {
+          "code": "DD829",
+          "name": "소프트웨어검증",
+          "credits": 3,
+
+          "category": "전공선택"
+        },
+        {
+          "code": "DD866",
+          "name": "AIor시스템",
+          "credits": 3,
+
+          "category": ""
+        },
+        {
+          "code": "DD867",
+          "name": "SW안전보안특강",
+          "credits": 3,
+
+          "category": ""
+        },
+        {
+          "code": "DD868",
+          "name": "유비쿼터스통신시스템",
+          "credits": 3,
+
+          "category": ""
+        },
+        {
+          "code": "DH020",
+          "name": "웹보안",
+          "credits": 3,
+
+          "category": ""
+        }
+      ]
+    }
+  ]
+}
