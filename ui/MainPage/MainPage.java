@@ -1,4 +1,4 @@
-package ui.mainPage;
+package ui.MainPage;
 
 import javax.swing.*;
 import java.awt.*;

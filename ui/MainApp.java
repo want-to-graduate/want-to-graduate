@@ -3,7 +3,7 @@ package ui;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import ui.mainPage.MainPage;
+import ui.MainPage.MainPage;
 import ui.chooseStudentNumberPage.ChooseStudentNumberPage;
 
 public class MainApp {
