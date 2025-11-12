@@ -1,4 +1,4 @@
-
+package ui.mainPage;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,6 +22,7 @@ public class MainPage extends JPanel {
 
         
         gbc.gridy++;
+        gbc.gridy++;
 
         // 부제목
         JLabel desc = new JLabel("당신의 수강 이력을 기반으로 졸업 가능 여부를 확인합니다.");
@@ -31,36 +32,35 @@ public class MainPage extends JPanel {
 
         
         gbc.gridy++;
+        gbc.insets = new Insets(40, 10, 10, 10); // 위쪽 40px 여백 추가
+
+
 
         // 버튼들을 담을 패널
         JPanel buttonPanel = new JPanel();
         buttonPanel.setBackground(Color.WHITE);  
 
         // 버튼 2개 생성
-        JButton loginBtn = new JButton("로그인");
-        JButton signUpBtn = new JButton("회원 가입");
+        JButton startBtn = new JButton("시작하기");
 
         // 버튼 폰트 설정
         Font btnFont = new Font("나눔고딕", Font.BOLD, 14);
-        loginBtn.setFont(btnFont);
-        signUpBtn.setFont(btnFont);
+        startBtn.setFont(btnFont);
+        
 
         // 버튼 색상 설정
-        loginBtn.setBackground(new Color(230, 230, 230));
-        signUpBtn.setBackground(new Color(230, 230, 230));
+        startBtn.setBackground(new Color(230, 230, 230));
 
         // 외곽선 제거
-        loginBtn.setFocusPainted(false);
-        signUpBtn.setFocusPainted(false);
+        startBtn.setFocusPainted(false);
 
         // 가로 120px, 세로 40px
-        loginBtn.setPreferredSize(new Dimension(120, 40));
-        signUpBtn.setPreferredSize(new Dimension(120, 40));
+        startBtn.setPreferredSize(new Dimension(120, 40));
 
         
-        buttonPanel.add(loginBtn);
-        buttonPanel.add(Box.createHorizontalStrut(20)); // 버튼 사이의 공백
-        buttonPanel.add(signUpBtn);
+        buttonPanel.add(startBtn);
+        // buttonPanel.add(Box.createHorizontalStrut(20)); // 버튼 사이의 공백
+
 
         
         add(buttonPanel, gbc); // 버튼 패널 추가

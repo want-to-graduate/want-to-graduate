@@ -1,9 +1,14 @@
+package ui;
+
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import wanttograduate.ui.MainPage.MainPage;
+import ui.mainPage.MainPage;
+import ui.chooseStudentNumberPage.ChooseStudentNumberPage;
 
 public class MainApp {
+    JFrame frame;
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("Main Application");
