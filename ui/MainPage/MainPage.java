@@ -1,10 +1,20 @@
 package ui.MainPage;
 
 import javax.swing.*;
+
+import ui.PageNavigator;
+import ui.Pages;
+
 import java.awt.*;
+import ui.PageNavigator;
 
 public class MainPage extends JPanel {
-    public MainPage() {  
+
+    private PageNavigator navigator;
+
+    public MainPage(PageNavigator navigator) {
+        this.navigator = navigator;
+
         setLayout(new GridBagLayout());  // 격자 형태
         setBackground(Color.WHITE);      // 배경색을 흰색으로 설정
 
@@ -40,7 +50,7 @@ public class MainPage extends JPanel {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setBackground(Color.WHITE);  
 
-        // 버튼 2개 생성
+        // 버튼 생성
         JButton startBtn = new JButton("시작하기");
 
         // 버튼 폰트 설정
@@ -57,7 +67,10 @@ public class MainPage extends JPanel {
         // 가로 120px, 세로 40px
         startBtn.setPreferredSize(new Dimension(120, 40));
 
-        
+        startBtn.addActionListener(e -> {
+            navigator.navigateTo(Pages.CHOOSE_STUDENT_NUMBER_PAGE);
+        });
+
         buttonPanel.add(startBtn);
         // buttonPanel.add(Box.createHorizontalStrut(20)); // 버튼 사이의 공백
 
