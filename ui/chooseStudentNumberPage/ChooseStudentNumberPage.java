@@ -60,7 +60,10 @@ public class ChooseStudentNumberPage extends JPanel {
 
         btn.addActionListener(e -> { // 이벤트리스너
             System.out.println("선택한 학번 : " + yearValue);
+            navigator.navigateTo(Pages.SELECT_COURSE_PAGE);
         });
+
+        
 
         return btn; // 버튼 반환
     }
