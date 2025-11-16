@@ -1,11 +1,11 @@
 package graduate;
 
 public enum CourseType {
-    MAJOR_REQUIRED("전필"),
-    MAJOR_ELECTIVE("전선"),
-    FACULTY_REQUIRED("학필"),
-    FACULTY_ELECTIVE("학선"),
-    NONE("없음");
+        MAJOR_REQUIRED("전필"),
+        MAJOR_ELECTIVE("전선"),
+        FACULTY_REQUIRED("학필"),
+        FACULTY_ELECTIVE("학선"),
+        NONE("컴터");
 
     private final String description;
 
