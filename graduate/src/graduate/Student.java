@@ -1,0 +1,149 @@
+package graduate;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Student {
+
+    //학번
+    private int year;
+    private GraduationRule graduationRule;
+    //복수전공 여부
+    private boolean isDoubleMajor;
+    private ArrayList<Course> takenCourses = new ArrayList<>();
+
+    //총학점
+    private int totalCredit = 0;
+    private int generalCredit = 0;
+    private int mscCredit = 0;
+    //전공총학점
+    private int majorCredit = 0;
+
+    //개수
+    private int majorRequired = 0;
+    private int majorElective = 0;
+    private int facultyRequired = 0;
+    private int facultyElective = 0;
+
+
+    public void inputStudent(int year, String depName, boolean isDoubleMajor, int generalCredit, int mscCredit, Manager<GraduationRule> depMgr) {
+        this.year = year;
+        this.graduationRule = depMgr.find(new String[]{ String.valueOf(year), depName});
+        this.isDoubleMajor = isDoubleMajor;
+        this.generalCredit = generalCredit;
+        this.mscCredit = mscCredit;
+    }
+
+    //낱개 과목 추가
+    public void selectCourse(int courseIndex, Manager<Course> courseMgr) {
+        Course c = courseMgr.mList.get(courseIndex);
+        takenCourses.add(c);
+        totalCredit += c.getCredit();
+        majorCredit += c.getCredit();
+
+        switch (c.getType()) {
+            case MAJOR_REQUIRED:  majorRequired++; break;
+            case MAJOR_ELECTIVE:  majorElective++; break;
+            case FACULTY_REQUIRED: facultyRequired++; break;
+            case FACULTY_ELECTIVE: facultyElective++; break;
+        }
+
+        totalCredit += generalCredit;
+        totalCredit += mscCredit;
+    }
+
+    //여러 과목 추가
+    public void selectCourses(List<Integer> courseIndexes, Manager<Course> courseMgr) {
+
+        for (Integer idx : courseIndexes) {
+            Course c = courseMgr.mList.get(idx);
+            takenCourses.add(c);
+            totalCredit += c.getCredit();
+            majorCredit += c.getCredit();
+
+            switch (c.getType()) {
+                case MAJOR_REQUIRED:  majorRequired++; break;
+                case MAJOR_ELECTIVE:  majorElective++; break;
+                case FACULTY_REQUIRED: facultyRequired++; break;
+                case FACULTY_ELECTIVE: facultyElective++; break;
+            }
+        }
+        totalCredit += generalCredit;
+        totalCredit += mscCredit;
+    }
+
+    public List<String> checkGraduation() {
+        boolean pass = true;
+        List<String> messages = new ArrayList<>();
+
+        int requiredMajor = isDoubleMajor ?
+                graduationRule.getDoubleMajor() : graduationRule.getSingleMajor();
+
+        if (totalCredit < graduationRule.getTotalCredit()) {
+            messages.add(String.format("총이수학점 부족 (%d/%d학점)",
+                    totalCredit, graduationRule.getTotalCredit()));
+            pass = false;
+        }
+
+        if (majorCredit < requiredMajor) {
+            messages.add(String.format("전공학점 부족 (%d/%d학점)",
+                    majorCredit, requiredMajor));
+            pass = false;
+        }
+
+        if (generalCredit < graduationRule.getGeneralCredit()) {
+            messages.add(String.format("교양학점 부족 (%d/%d학점)",
+                    generalCredit, graduationRule.getGeneralCredit()));
+            pass = false;
+        }
+
+        if (mscCredit < graduationRule.getMscCredit()) {
+            messages.add(String.format("MSC학점 부족 (%d/%d학점)",
+                    mscCredit, graduationRule.getMscCredit()));
+            pass = false;
+        }
+
+        if (majorRequired < graduationRule.getMajorRequired()) {
+            messages.add(String.format("전공필수 과목 이수 부족 (%d/%d과목)",
+                    majorRequired, graduationRule.getMajorRequired()));
+            pass = false;
+        }
+
+        if (majorElective < graduationRule.getMajorElective()) {
+            messages.add(String.format("전공선택 과목 이수 부족 (%d/%d과목)",
+                    majorElective, graduationRule.getMajorElective()));
+            pass = false;
+        }
+
+        if (facultyRequired < graduationRule.getFacultyRequired()) {
+            messages.add(String.format("학부기초필수 과목 이수 부족 (%d/%d과목)",
+                    facultyRequired, graduationRule.getFacultyRequired()));
+            pass = false;
+        }
+
+        if (facultyElective < graduationRule.getFacultyElective()) {
+            messages.add(String.format("학부기초선택 과목 이수 부족 (%d/%d과목)",
+                    facultyElective, graduationRule.getFacultyElective()));
+            pass = false;
+        }
+
+        if (pass)
+            messages.add("졸업 가능합니다! 축하합니다!");
+        else
+            messages.add("졸업요건을 만족하지 못했습니다.");
+
+        return messages;
+    }
+
+    public List<String> getTakenCourseList() {
+        List<String> result = new ArrayList<>();
+        for (Course c : takenCourses) {
+            result.add(c.toString());
+        }
+        return result;
+    }
+
+    public GraduationRule getGraduationRule() {
+        return graduationRule;
+    }
+}
