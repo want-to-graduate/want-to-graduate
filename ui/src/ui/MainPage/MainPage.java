@@ -6,7 +6,6 @@ import ui.PageNavigator;
 import ui.Pages;
 
 import java.awt.*;
-import ui.PageNavigator;
 
 public class MainPage extends JPanel {
 
@@ -72,7 +71,6 @@ public class MainPage extends JPanel {
         });
 
         buttonPanel.add(startBtn);
-        // buttonPanel.add(Box.createHorizontalStrut(20)); // 버튼 사이의 공백
 
 
         

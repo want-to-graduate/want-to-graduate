@@ -11,5 +11,4 @@
 bin/
 
 # Ignore everything except graduate folder
-/*
 !/graduate
