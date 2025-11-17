@@ -9,6 +9,8 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+
 
 // 백엔드 쪽 클래스 import (패키지명 graduate 기준)
 import graduate.Course;
@@ -33,29 +35,30 @@ public class SelectCoursePage extends JPanel {
     private DefaultTableModel tableModel;
     private JTable courseTable;
 
+    private final Consumer<List<Integer>> onResultRequested;
+
+
     /**
      * @param navigator 페이지 전환용
      * @param courses   과목 목록
      * @param entryYear 선택한 학번
      */
 
-    public SelectCoursePage(PageNavigator navigator, List<Course> courses, int entryYear) {
+    public SelectCoursePage(PageNavigator navigator, List<Course> courses, int entryYear, Consumer<List<Integer>> onResultRequested) {
         this.navigator = navigator;
         this.entryYear = entryYear;
+        this.onResultRequested = onResultRequested;
 
         StudentCourseCount scc = new StudentCourseCount();
         scc.run();
 
         Student student = new Student();
-        student.inputStudent(22, "컴공", false, 50, 30, scc.getDepMgr());
+        student.inputStudent(entryYear, "컴공", false, 50, 30, scc.getDepMgr());
 
         // 과목 복사
         if (courses != null) {
             this.courseList.addAll(student.getGraduationRule().getCourses());
         }
-
-        
-
 
         // UI
         setLayout(new BorderLayout()); // 전체 레이아웃
@@ -93,8 +96,7 @@ public class SelectCoursePage extends JPanel {
         centerPanel.setOpaque(false);
         cardPanel.add(centerPanel, BorderLayout.CENTER); 
 
-        // 열은 일단 "과목 정보" 하나로 통일해서 표시
-        // (이유: Course에 이름 getter가 없으므로 toString() 출력 통째로 보여주는 방식)
+        
         String[] columnNames = {"과목 정보"}; // 열 이름
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
@@ -194,7 +196,21 @@ public class SelectCoursePage extends JPanel {
         // 버튼 클릭 시 동작 연결
         addButton.addActionListener(e -> addSelectedCourses()); // 선택한 과목을 누적
         showButton.addActionListener(e -> printAccumulatedCourses()); // 지금까지 담은 과목 출력
-        resultButton.addActionListener(e -> navigator.navigateTo(Pages.GRADUATION_RESULT_PAGE)); // 졸업 결과 페이지로 이동
+        resultButton.addActionListener(e -> {
+            if (onResultRequested != null) {
+                // 현재까지 담긴 과목 인덱스를 복사해서 MainApp으로 전달
+                onResultRequested.accept(new ArrayList<>(selectedCourseIndexes));
+            }
+        });
+        // resultButton.addActionListener(e -> {
+        //     List<String> messages = getResult();   // 결과 받아오기
+
+        //     System.out.println("=== 졸업 요건 체크 결과 ===");
+        //     for (String msg : messages) {
+        //         System.out.println(msg);
+        //     }
+        //     System.out.println("==========================");
+        // });
 
         bottomPanel.add(addButton);
         bottomPanel.add(showButton);
@@ -244,6 +260,7 @@ public class SelectCoursePage extends JPanel {
 
             String line = (String) tableModel.getValueAt(rowIndex, 0);
             String firstToken = line.split(" ")[0];
+            selectedCourses.add(c);
 
             try {
                 int courseIndex = Integer.parseInt(firstToken);
@@ -286,6 +303,20 @@ public class SelectCoursePage extends JPanel {
     
     public List<Course> getSelectedCourses() { // 선택한 과목 목록 반환
         return new ArrayList<>(selectedCourses);  
+    }
+
+    public List<String> getResult() {
+        StudentCourseCount scc = new StudentCourseCount();
+        scc.run();
+
+        Student student = new Student();
+        student.inputStudent(entryYear, "컴공", false, 50, 30, scc.getDepMgr());
+
+        // 선택한 과목들 설정
+        student.selectCourses(selectedCourseIndexes, scc.getCourseMgr());
+
+        // 졸업 요건 체크
+        return student.checkGraduation();
     }
 
     
