@@ -1,3 +1,15 @@
 .vscode
 .DS_Store
 /lib/*.jar
+
+# Eclipse/VSCode settings
+.classpath
+.project
+.settings/
+
+# Java build output
+bin/
+
+# Ignore everything except graduate folder
+/*
+!/graduate
