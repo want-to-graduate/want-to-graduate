@@ -12,6 +12,8 @@ import java.util.List;
 
 // 백엔드 쪽 클래스 import (패키지명 graduate 기준)
 import graduate.Course;
+import graduate.Student;
+import graduate.StudentCourseCount;
 import ui.PageNavigator;
 import ui.Pages;
 
@@ -19,6 +21,7 @@ public class SelectCoursePage extends JPanel {
 
     private final PageNavigator navigator;     // 페이지 네비게이터
     private final int entryYear;              // 선택한 학번의 "입학 연도" (예: 25 → 2025 처럼 의미만 보관)
+    private final List<Integer> selectedCourseIndexes = new ArrayList<>();
 
     // 선택 가능한 과목 목록 
     private final List<Course> courseList = new ArrayList<>();
@@ -40,10 +43,19 @@ public class SelectCoursePage extends JPanel {
         this.navigator = navigator;
         this.entryYear = entryYear;
 
+        StudentCourseCount scc = new StudentCourseCount();
+        scc.run();
+
+        Student student = new Student();
+        student.inputStudent(22, "컴공", false, 50, 30, scc.getDepMgr());
+
         // 과목 복사
         if (courses != null) {
-            this.courseList.addAll(courses);
+            this.courseList.addAll(student.getGraduationRule().getCourses());
         }
+
+        
+
 
         // UI
         setLayout(new BorderLayout()); // 전체 레이아웃
@@ -216,26 +228,36 @@ public class SelectCoursePage extends JPanel {
     // 선택한 과목들을 누적하는 메서드
     private void addSelectedCourses() {
         int[] selectedRows = courseTable.getSelectedRows(); // 선택된 행 인덱스 배열
+        
         if (selectedRows.length == 0) { // 행이 0이면 출력
             System.out.println("선택된 과목이 없습니다.");
             return;
         }
 
+        
         int newAdded = 0; // 새로 담긴 과목 수 
+
         for (int rowIndex : selectedRows) {
             Course c = courseList.get(rowIndex);
 
-            
-            
-            
             int code = c.getId();
 
-            boolean alreadyAdded = selectedCourses.stream()
-                    .anyMatch(sc -> sc.getId() == code);
+            String line = (String) tableModel.getValueAt(rowIndex, 0);
+            String firstToken = line.split(" ")[0];
 
-            if (!alreadyAdded) {
-                selectedCourses.add(c);
-                newAdded++;
+            try {
+                int courseIndex = Integer.parseInt(firstToken);
+
+                boolean alreadyAddedIndex = selectedCourseIndexes.contains(courseIndex);
+                
+                if (!alreadyAddedIndex) {
+                    selectedCourseIndexes.add(courseIndex);
+                    System.out.println("새로 담은 과목 코드: " + courseIndex);
+                    newAdded++;
+                }
+            } catch (NumberFormatException e) {
+                // 첫 번째 토큰이 정수가 아닌 경우 무시
+                System.out.println("code 오류남");
             }
         }
 
