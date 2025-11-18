@@ -1,5 +1,6 @@
 .vscode
 .DS_Store
+/lib/*.jar
 
 # Eclipse/VSCode settings
 .classpath
@@ -10,5 +11,4 @@
 bin/
 
 # Ignore everything except graduate folder
-/*
 !/graduate

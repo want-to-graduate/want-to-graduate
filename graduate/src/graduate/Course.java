@@ -46,8 +46,8 @@ public class Course implements Manageable{
     @Override
     public String toString() {
         return String.format(
-                "%s %s %d학점 %s (%d-%d)",
-                code, name, credit, type.getDescription(), grade, semester
+                "%s %s %s %d학점 %s (%d-%d)",
+                id, code, name, credit, type.getDescription(), grade, semester
         );
     }
 
