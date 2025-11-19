@@ -260,7 +260,11 @@ public class SelectCoursePage extends JPanel {
 
             String line = (String) tableModel.getValueAt(rowIndex, 0);
             String firstToken = line.split(" ")[0];
-            selectedCourses.add(c);
+
+            if (!selectedCourses.contains(c)) { // 과목이 누적 목록에 없으면
+                selectedCourses.add(c);
+            }
+            
 
             try {
                 int courseIndex = Integer.parseInt(firstToken);
@@ -305,19 +309,19 @@ public class SelectCoursePage extends JPanel {
         return new ArrayList<>(selectedCourses);  
     }
 
-    public List<String> getResult() {
-        StudentCourseCount scc = new StudentCourseCount();
-        scc.run();
+    // public List<String> getResult() {
+    //     StudentCourseCount scc = new StudentCourseCount();
+    //     scc.run();
 
-        Student student = new Student();
-        student.inputStudent(entryYear, "컴공", false, 50, 30, scc.getDepMgr());
+    //     Student student = new Student();
+    //     student.inputStudent(entryYear, "컴공", false, 50, 30, scc.getDepMgr());
 
-        // 선택한 과목들 설정
-        student.selectCourses(selectedCourseIndexes, scc.getCourseMgr());
+    //     // 선택한 과목들 설정
+    //     student.selectCourses(selectedCourseIndexes, scc.getCourseMgr());
 
-        // 졸업 요건 체크
-        return student.checkGraduation();
-    }
+    //     // 졸업 요건 체크
+    //     return student.checkGraduation();
+    // }
 
     
     // public int getEntryYear() {
