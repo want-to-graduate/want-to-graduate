@@ -25,7 +25,13 @@ public class StudentCourseCount {
             }
         });
     }
-
+    
+    //어떤 학생 수강 내역 파일 읽을 건지 결정
+    public List<Integer> loadStudentFile(String fullId) {
+    	String filename = fullId + ".txt";
+    	return courseMgr.readFile(filename);
+    }
+ 
     //여기는 프론트에서 예시
     public static void main(String[] args) {
 
@@ -33,8 +39,18 @@ public class StudentCourseCount {
         main.run();
         //학생 객체 만들어서 학생의 정보 넣어주기
         Student student = new Student();
+        //프론트에서 fullId 받은 경우
+        String fullId = "202211548";
+        student.inputStudent(fullId, "컴공", false, 50, 30, main.getDepMgr());
+        //202211548.txt에서 과목 id 로드
+        List<Integer> ids = main.loadStudentFile(fullId);
+        
+        if (!ids.isEmpty()) {
+        	student.selectCourses(ids, main.getCourseMgr());
+        } else {
+        //fullId.txt 없는 경우
         student.inputStudent(22, "컴공", false, 50, 30, main.getDepMgr());
-
+        }
         //학생이 다니는 학과의 졸업요건(필요시 사용)
         System.out.println(student.getGraduationRule().toString());
         System.out.println();
@@ -47,7 +63,7 @@ public class StudentCourseCount {
         }
 
         //학생이 들은 과목 넣어주기
-        student.selectCourses(List.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10), main.getCourseMgr());
+        //student.selectCourses(List.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10), main.getCourseMgr());
         System.out.println();
 
         //졸업요건 체크하기
@@ -72,6 +88,5 @@ public class StudentCourseCount {
         for (Course course : result) {
             System.out.println(course.toString());
         }
-
     }
 }

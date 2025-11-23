@@ -41,6 +41,29 @@ public class Manager<T extends Manageable> {
         }
         filein.close();
     }
+    
+    //학생 수강 내역 파일에서 과목 id를 읽은 후 List로 반환
+    public List<Integer> readFile(String filename) {
+    	List<Integer> ids = new ArrayList<>();
+    	Scanner filein = null;
+    	try {
+            filein = new Scanner(new File(filename));
+        } catch (FileNotFoundException e) {
+        	return ids;
+        }
+    	while (filein.hasNext()) {
+    		String token = filein.next().trim();
+    		if (token.equals("-")) break;
+    		
+    		try {
+    			ids.add(Integer.parseInt(token));
+    		} catch (NumberFormatException e) {
+    			
+    		}
+    	}
+    	filein.close();
+    	return ids;
+    }
 
     public Scanner openFile(String filename) {
         Scanner filein = null;

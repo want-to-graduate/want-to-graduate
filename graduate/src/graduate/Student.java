@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Student {
-
+	
+	//전체 학번(9자리)
+	private String fullId;
+	
     //학번
     private int year;
     private GraduationRule graduationRule;
@@ -26,12 +29,26 @@ public class Student {
     private int facultyElective = 0;
 
 
+    //fullId 저장, year 추출
+    public void inputStudent(String fullId, String depName, boolean isDoubleMajor, int generalCredit, int mscCredit, Manager<GraduationRule> depMgr) {
+    	this.fullId = fullId;
+    	this.year = Integer.parseInt(fullId.substring(2, 4));
+        this.graduationRule = depMgr.find(new String[]{ String.valueOf(year), depName});
+        this.isDoubleMajor = isDoubleMajor;
+        this.generalCredit = generalCredit;
+        this.mscCredit = mscCredit;
+    }
+
     public void inputStudent(int year, String depName, boolean isDoubleMajor, int generalCredit, int mscCredit, Manager<GraduationRule> depMgr) {
         this.year = year;
         this.graduationRule = depMgr.find(new String[]{ String.valueOf(year), depName});
         this.isDoubleMajor = isDoubleMajor;
         this.generalCredit = generalCredit;
         this.mscCredit = mscCredit;
+    }
+    
+    public void loadStudentCourses(List<Integer> courseIds, Manager<Course> courseMgr) {
+    	selectCourses(courseIds, courseMgr);
     }
 
     //낱개 과목 추가
@@ -71,7 +88,7 @@ public class Student {
         totalCredit += generalCredit;
         totalCredit += mscCredit;
     }
-
+    
     public List<String> checkGraduation() {
         boolean pass = true;
         List<String> messages = new ArrayList<>();
@@ -145,5 +162,15 @@ public class Student {
 
     public GraduationRule getGraduationRule() {
         return graduationRule;
+    }
+    
+    //fullId getter
+    public String getFullId() {
+    	return fullId;
+    }
+    
+    // year getter
+    public int getYear() {
+    	return year;
     }
 }
