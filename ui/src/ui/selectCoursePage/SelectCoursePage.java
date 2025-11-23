@@ -6,6 +6,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.CompoundBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,12 +31,10 @@ public class SelectCoursePage extends JPanel {
 
     // 사용자가 담은 과목들 (누적)
     private final List<Course> selectedCourses = new ArrayList<>();
-
-    // 테이블
-    private DefaultTableModel tableModel;
-    private JTable courseTable;
-
     private final Consumer<List<Integer>> onResultRequested;
+    // 테이블
+    private final DefaultTableModel tableModel;
+    private final JTable courseTable;
 
 
     /**
@@ -97,7 +96,7 @@ public class SelectCoursePage extends JPanel {
         cardPanel.add(centerPanel, BorderLayout.CENTER); 
 
         
-        String[] columnNames = {"과목 정보"}; // 열 이름
+        String[] columnNames = {"ID", "학과 코드", "교과목명", "학점", "이수구분", "(학년-학기)"}; // 열 이름
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -109,7 +108,18 @@ public class SelectCoursePage extends JPanel {
         // 과목 데이터를 채움, Course에서 받아오는 과목 ArrayList의 내용
         for (Course c : courseList) { // courseList의 각 과목 전체를 출력
             String line = c.toString();
-            tableModel.addRow(new Object[]{ line });
+//            tableModel.addRow(new Object[]{ line });
+            String[] tokens = line.split(" ");
+
+            String id = tokens[0];
+            String code = tokens[1];
+            String courseName = tokens[2];
+            String creditText =  tokens[3];
+            String category = tokens[4];
+            String yearSemester = tokens[5];
+
+            tableModel.addRow(new Object[]{id, code, courseName, creditText, category, yearSemester});
+
         }
 
         // 스타일링
@@ -147,6 +157,25 @@ public class SelectCoursePage extends JPanel {
         courseTable.setShowVerticalLines(false); // 세로선 없음
         courseTable.setIntercellSpacing(new Dimension(0, 8)); // 셀 간격
 
+        // 열 크기/정렬 설정
+        courseTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+
+        TableColumnModel columnModel = courseTable.getColumnModel();
+        columnModel.getColumn(0).setPreferredWidth(60);   // ID
+        columnModel.getColumn(1).setPreferredWidth(90);   // 학과 코드
+        columnModel.getColumn(2).setPreferredWidth(350);  // 교과목명 (조금 넓게)
+        columnModel.getColumn(3).setPreferredWidth(60);   // 학점
+        columnModel.getColumn(4).setPreferredWidth(90);   // 이수구분
+        columnModel.getColumn(5).setPreferredWidth(90);   // (학년-학기)
+
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+
+        // 가운데 정렬
+        for (int i = 0; i < 6; i++) {
+            columnModel.getColumn(i).setCellRenderer(centerRenderer);
+
+        }
         // 헤더 스타일링
         var header = courseTable.getTableHeader();
         header.setOpaque(false);
@@ -202,15 +231,6 @@ public class SelectCoursePage extends JPanel {
                 onResultRequested.accept(new ArrayList<>(selectedCourseIndexes));
             }
         });
-        // resultButton.addActionListener(e -> {
-        //     List<String> messages = getResult();   // 결과 받아오기
-
-        //     System.out.println("=== 졸업 요건 체크 결과 ===");
-        //     for (String msg : messages) {
-        //         System.out.println(msg);
-        //     }
-        //     System.out.println("==========================");
-        // });
 
         bottomPanel.add(addButton);
         bottomPanel.add(showButton);
@@ -304,27 +324,7 @@ public class SelectCoursePage extends JPanel {
         System.out.println("================================");
     }
 
-    
     public List<Course> getSelectedCourses() { // 선택한 과목 목록 반환
         return new ArrayList<>(selectedCourses);  
     }
-
-    // public List<String> getResult() {
-    //     StudentCourseCount scc = new StudentCourseCount();
-    //     scc.run();
-
-    //     Student student = new Student();
-    //     student.inputStudent(entryYear, "컴공", false, 50, 30, scc.getDepMgr());
-
-    //     // 선택한 과목들 설정
-    //     student.selectCourses(selectedCourseIndexes, scc.getCourseMgr());
-
-    //     // 졸업 요건 체크
-    //     return student.checkGraduation();
-    // }
-
-    
-    // public int getEntryYear() {
-    //     return entryYear;
-    // }
 }
