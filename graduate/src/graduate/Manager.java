@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.function.Predicate;
 
 public class Manager<T extends Manageable> {
     public ArrayList<T> mList = new ArrayList<>();
@@ -24,6 +25,15 @@ public class Manager<T extends Manageable> {
                 return p;
         }
         return null;
+    }
+    
+    public List<T> filterBy(Predicate<T> condition) {
+        List<T> result = new ArrayList<>();
+        for (T m : mList) {
+            if (condition.test(m))
+                result.add(m);
+        }
+        return result;
     }
 
     public void readAll(String filename, Factory<T> fac) {
