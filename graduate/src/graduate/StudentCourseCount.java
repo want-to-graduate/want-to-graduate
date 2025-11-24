@@ -17,6 +17,15 @@ public class StudentCourseCount {
                 return new Course();
             }
         });
+        
+      //msc과목 추가로 넣어줌.
+        courseMgr.readAll("msc.txt", new Factory<Course>() {
+            @Override
+            public Course create() {
+                return new Course();
+            }
+        });
+
 
         depMgr.readAll("department.txt", new Factory<GraduationRule>() {
             @Override
@@ -26,14 +35,16 @@ public class StudentCourseCount {
         });
     }
 
-    //여기는 프론트에서 예시
+  //여기는 프론트에서 예시
     public static void main(String[] args) {
 
         StudentCourseCount main = new StudentCourseCount();
         main.run();
         //학생 객체 만들어서 학생의 정보 넣어주기
         Student student = new Student();
-        student.inputStudent(22, "컴공", false, 50, 30, main.getDepMgr());
+
+        //이제 MSC는 교양이 아닌 전공처럼 직접 넣어주기로함.
+        student.inputStudent(22, "컴공", false, 50, main.getDepMgr());
 
         //학생이 다니는 학과의 졸업요건(필요시 사용)
         System.out.println(student.getGraduationRule().toString());
@@ -45,10 +56,23 @@ public class StudentCourseCount {
         for (Course course : courseList) {
             System.out.println(course.toString());
         }
+        System.out.println();
 
-        //학생이 들은 과목 넣어주기
+        //MSC 과목 불러오기
+        System.out.println("MSC과목 리스트");
+        List<Course> mscList = courseMgr.filterBy(c -> c.getType() == CourseType.MSC);
+        for (Course course : mscList) {
+            System.out.println(course.toString());
+        }
+
+        //학생이 들은 전공 과목 넣어주기
         student.selectCourses(List.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10), main.getCourseMgr());
         System.out.println();
+
+
+        student.selectCourses(List.of(101, 102, 103), main.getCourseMgr());
+        System.out.println();
+
 
         //졸업요건 체크하기
         List<String> message = student.checkGraduation();
@@ -64,7 +88,15 @@ public class StudentCourseCount {
         for (String s : takenCourseList) {
             System.out.println(s);
         }
+        System.out.println();
 
+
+        //학생이 들은 MSC과목 가져오기
+        System.out.println("학생이 들은 MSC 과목");
+        List<String> takenMSCCourseList = student.getTakenMscCourseList();
+        for (String s : takenMSCCourseList) {
+            System.out.println(s);
+        }
         System.out.println();
 
         //과목 검색하기(과목명 or 학수코드)

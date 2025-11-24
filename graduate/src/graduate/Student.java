@@ -26,30 +26,28 @@ public class Student {
     private int facultyElective = 0;
 
 
-    public void inputStudent(int year, String depName, boolean isDoubleMajor, int generalCredit, int mscCredit, Manager<GraduationRule> depMgr) {
+    public void inputStudent(int year, String depName, boolean isDoubleMajor, int generalCredit, Manager<GraduationRule> depMgr) {
         this.year = year;
         this.graduationRule = depMgr.find(new String[]{ String.valueOf(year), depName});
         this.isDoubleMajor = isDoubleMajor;
         this.generalCredit = generalCredit;
-        this.mscCredit = mscCredit;
+        totalCredit += generalCredit;
     }
 
-    //낱개 과목 추가
+  //낱개 과목 추가
     public void selectCourse(int courseIndex, Manager<Course> courseMgr) {
         Course c = courseMgr.mList.get(courseIndex);
         takenCourses.add(c);
         totalCredit += c.getCredit();
-        majorCredit += c.getCredit();
 
         switch (c.getType()) {
-            case MAJOR_REQUIRED:  majorRequired++; break;
-            case MAJOR_ELECTIVE:  majorElective++; break;
-            case FACULTY_REQUIRED: facultyRequired++; break;
-            case FACULTY_ELECTIVE: facultyElective++; break;
+            case MAJOR_REQUIRED:  majorRequired++; majorCredit += c.getCredit(); break;
+            case MAJOR_ELECTIVE:  majorElective++; majorCredit += c.getCredit(); break;
+            case FACULTY_REQUIRED: facultyRequired++; majorCredit += c.getCredit(); break;
+            case FACULTY_ELECTIVE: facultyElective++; majorCredit += c.getCredit(); break;
+            case MSC: mscCredit += c.getCredit(); break;
         }
 
-        totalCredit += generalCredit;
-        totalCredit += mscCredit;
     }
 
     //여러 과목 추가
@@ -59,18 +57,19 @@ public class Student {
             Course c = courseMgr.mList.get(idx);
             takenCourses.add(c);
             totalCredit += c.getCredit();
-            majorCredit += c.getCredit();
+
 
             switch (c.getType()) {
-                case MAJOR_REQUIRED:  majorRequired++; break;
-                case MAJOR_ELECTIVE:  majorElective++; break;
-                case FACULTY_REQUIRED: facultyRequired++; break;
-                case FACULTY_ELECTIVE: facultyElective++; break;
+                case MAJOR_REQUIRED:  majorRequired++; majorCredit += c.getCredit(); break;
+                case MAJOR_ELECTIVE:  majorElective++; majorCredit += c.getCredit(); break;
+                case FACULTY_REQUIRED: facultyRequired++; majorCredit += c.getCredit(); break;
+                case FACULTY_ELECTIVE: facultyElective++; majorCredit += c.getCredit(); break;
+                case MSC: mscCredit += c.getCredit(); break;
             }
         }
-        totalCredit += generalCredit;
-        totalCredit += mscCredit;
+
     }
+
 
     public List<String> checkGraduation() {
         boolean pass = true;
@@ -135,10 +134,24 @@ public class Student {
         return messages;
     }
 
+ // MSC과목을 제외한 전공과목만 가져오기
     public List<String> getTakenCourseList() {
         List<String> result = new ArrayList<>();
         for (Course c : takenCourses) {
-            result.add(c.toString());
+            if (c.getType() != CourseType.MSC) {
+                result.add(c.toString());
+            }
+        }
+        return result;
+    }
+
+    //학생이 들은 과목 중 MSC과목만 가져오기
+    public List<String> getTakenMscCourseList() {
+        List<String> result = new ArrayList<>();
+        for (Course c : takenCourses) {
+            if (c.getType() == CourseType.MSC) {
+                result.add(c.toString());
+            }
         }
         return result;
     }
