@@ -27,7 +27,7 @@ public class GraduationResultPage extends JPanel {
      * @param selectedCourseIndexes 사용자가 선택한 과목들의 인덱스 리스트
      */
     public GraduationResultPage(PageNavigator navigator,
-                                int entryYear,
+                                String fullId,
                                 List<Integer> selectedCourseIndexes) {
         this.navigator = navigator;
 
@@ -87,7 +87,7 @@ public class GraduationResultPage extends JPanel {
         add(contentPanel, BorderLayout.CENTER);
 
         // 졸업 계산 후 UI에 반영
-        List<String> messages = computeResult(entryYear, selectedCourseIndexes);
+        List<String> messages = computeResult(fullId, selectedCourseIndexes);
         showMessages(messages);
     }
 
@@ -98,21 +98,15 @@ public class GraduationResultPage extends JPanel {
      * @param selectedCourseIndexes 사용자가 선택한 과목들의 인덱스 리스트
      * @return 졸업 요건 체크 결과 메시지 리스트
      */
-    private List<String> computeResult(int entryYear, List<Integer> selectedCourseIndexes) {
+    private List<String> computeResult(String fullId, List<Integer> selectedCourseIndexes) {
 
         StudentCourseCount scc = new StudentCourseCount();
         scc.run();
 
         Student student = new Student();
 
-        
-        if (entryYear == 2025) entryYear = 25;
-        if (entryYear == 2024) entryYear = 24;
-        if (entryYear == 2023) entryYear = 23;
-        if (entryYear == 2022) entryYear = 22;
-
         // 학생 기본 정보 입력
-        student.inputStudent(entryYear, "컴공", false, 50, 30, scc.getDepMgr());
+        student.inputStudent(fullId, "컴공", false, 50, scc.getDepMgr());
 
         // 선택한 과목 반영
         if (selectedCourseIndexes != null && !selectedCourseIndexes.isEmpty()) {

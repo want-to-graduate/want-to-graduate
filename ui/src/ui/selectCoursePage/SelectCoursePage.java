@@ -23,7 +23,7 @@ import ui.Pages;
 public class SelectCoursePage extends JPanel {
 
     private final PageNavigator navigator;     // 페이지 네비게이터
-    private final int entryYear;              // 선택한 학번의 "입학 연도" (예: 25 → 2025 처럼 의미만 보관)
+    private final String fullId;               // 선택한 학번의 전체 ID (예: 202015071)
     private final List<Integer> selectedCourseIndexes = new ArrayList<>();
 
     // 선택 가능한 과목 목록 
@@ -43,16 +43,16 @@ public class SelectCoursePage extends JPanel {
      * @param entryYear 선택한 학번
      */
 
-    public SelectCoursePage(PageNavigator navigator, List<Course> courses, int entryYear, Consumer<List<Integer>> onResultRequested) {
+    public SelectCoursePage(PageNavigator navigator, List<Course> courses, String fullId, Consumer<List<Integer>> onResultRequested) {
         this.navigator = navigator;
-        this.entryYear = entryYear;
+        this.fullId = fullId;
         this.onResultRequested = onResultRequested;
 
         StudentCourseCount scc = new StudentCourseCount();
         scc.run();
 
         Student student = new Student();
-        student.inputStudent(entryYear, "컴공", false, 50, 30, scc.getDepMgr());
+        student.inputStudent(fullId, "컴공", false, 50, scc.getDepMgr());
 
         // 과목 복사
         if (courses != null) {
@@ -76,7 +76,7 @@ public class SelectCoursePage extends JPanel {
         titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS)); // 수직 정렬
         titlePanel.setOpaque(false);
 
-        JLabel title = new JLabel(entryYear + "학번 교육과정 과목 선택"); // 입력 받은 학번의 교육 과정 과목 선택 제목
+        JLabel title = new JLabel(student.getYear() + "학번 교육과정 과목 선택"); // 입력 받은 학번의 교육 과정 과목 선택 제목
         title.setFont(new Font("나눔고딕", Font.BOLD, 22));
         title.setForeground(new Color(0x111827));
 

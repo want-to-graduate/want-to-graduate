@@ -3,8 +3,8 @@ package ui;
 import java.awt.CardLayout;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.IntConsumer;
 import java.util.function.Consumer;
+
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -31,7 +31,7 @@ public class MainApp {
     private final Manager<Course> courseMgr;    // 전체 과목 Manager (백엔드에서 제공)
 
 
-    private int selectedYear = 0;                 // 선택한 학번(입학년도)
+    private String fullId = "";               // 전체 학번
     private String departmentName = "컴공";        // 학과
     private boolean isDoubleMajor = false;        // 복수전공 여부
     private int generalCredit = 0;                // 교양 학점
@@ -70,34 +70,37 @@ public class MainApp {
         };
 
         // 학번 선택 페이지에서 사용
-        IntConsumer onYearSelected = (int entryYear) -> {
-            System.out.println("선택된 학번(입학연도): " + entryYear);
+        Consumer<String> onFullIdSelected = (fullId) -> {
+            System.out.println("입력한 학번: " + fullId);
 
-            this.selectedYear = entryYear;
-            if (entryYear == 2025) {
-                entryYear = 25;
-            }
-            if (entryYear == 2024) {
-                entryYear = 24;
-            }
-            if (entryYear == 2023) {
-                entryYear = 23;
-            }
-            if (entryYear == 2022) {
-                entryYear = 22;
-            }
-            System.out.println("선택된 학번(입학연도): " + entryYear);
-
+            this.fullId = fullId;
             
             currentStudent = new Student();
-            currentStudent.inputStudent(
-                entryYear,              // 학번
-                "컴공",
-                false,          
-                50,
-                30,              
-                scc.getDepMgr()     
-            );
+
+            List<Integer> listSelectId = scc.loadStudentFile(fullId);
+            System.out.println("불러온 학번이 선택한 과목 수 : " + listSelectId.size());
+
+            if (!(listSelectId.isEmpty())) {
+                System.out.println("기존에 저장된 학번입니다.");
+                currentStudent.inputStudent(
+                    fullId,
+                    "컴공",
+                    false,
+                    50,
+                    scc.getDepMgr()
+                );
+            } else {
+                System.out.println("없는 학번이에여,,, 학번 파일 새로 만들게여,,,");
+                currentStudent.inputStudent(
+                    fullId,
+                    "컴공",
+                    false,
+                    50,
+                    scc.getDepMgr()
+                );
+                scc.saveStudentFile(currentStudent);
+                System.out.println("해당 학번 파일 만들어써여...");
+            }
 
             
             List<Course> curriculumCourses = currentStudent
@@ -107,9 +110,11 @@ public class MainApp {
             
             Consumer<List<Integer>> onResultRequested = (List<Integer> selectedIndexes) -> {
             
+                this.selectedCourseIndexes = selectedIndexes;
+
                 GraduationResultPage resultPage = new GraduationResultPage(
                     navigator,
-                    this.selectedYear,
+                    this.fullId,
                     selectedIndexes
                 );
                 
@@ -125,7 +130,7 @@ public class MainApp {
             selectCoursePage = new SelectCoursePage(
                 navigator,
                 curriculumCourses,    // 해당 학번/학과 교과 목록
-                entryYear,            // 화면에 학번 표시용
+                fullId,
                 onResultRequested     // "결과 보기" 버튼이 눌렸을 때
             );
 
@@ -136,7 +141,7 @@ public class MainApp {
 
         // 페이지 생성
         MainPage mainPage = new MainPage(navigator);
-        ChooseStudentNumberPage choosePage = new ChooseStudentNumberPage(navigator, onYearSelected);
+        ChooseStudentNumberPage choosePage = new ChooseStudentNumberPage(navigator, onFullIdSelected);
 
         // 페이지 등록
         rootPanel.add(mainPage, Pages.MAIN_PAGE);
@@ -160,8 +165,8 @@ public class MainApp {
 
     // --- Getter ---
 
-    public int getSelectedYear() {
-        return selectedYear;
+    public String getFullId() {
+        return fullId;
     }
 
     public String getDepartmentName() {
