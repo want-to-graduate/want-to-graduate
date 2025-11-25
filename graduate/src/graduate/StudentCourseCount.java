@@ -84,25 +84,18 @@ public class StudentCourseCount {
         } else {
         // fullId.txt 없는 경우
         System.out.println("파일 없음");
-        
-        // 1: 새 파일 생성, 즉 신규 fullId 등록
-        int noFileChoice = 1;
-        // 0: fullId 등록 없이 22~25학번 선택
-        if (noFileChoice == 0) {
+
             //이제 MSC는 교양이 아닌 전공처럼 직접 넣어주기로함.
-            student.inputStudent(22, "컴공", false, 50, main.getDepMgr());
+        	// 신규 학번 등록
+        	student.inputStudent(fullId, "컴공", false, 50, main.getDepMgr());
+        	// 새 학생 파일 생성
+            main.saveStudentFile(student);
           //학생이 들은 전공 과목 넣어주기
             student.selectCourses(List.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10), main.getCourseMgr());
             System.out.println();
             student.selectCourses(List.of(101, 102, 103), main.getCourseMgr());
             System.out.println();
-        } else {
-        	// 신규 학번 등록
-        	student.inputStudent(fullId, "컴공", false, 50, main.getDepMgr());
-        	// 새 학생 파일 생성
-            main.saveStudentFile(student);
             System.out.println("학생 파일 생성 완료");
-        }
     }
 
         //학생이 다니는 학과의 졸업요건(필요시 사용)
