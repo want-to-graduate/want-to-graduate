@@ -109,51 +109,75 @@ public class Student {
                 graduationRule.getDoubleMajor() : graduationRule.getSingleMajor();
 
         if (totalCredit < graduationRule.getTotalCredit()) {
-            messages.add(String.format("총이수학점 부족 (%d/%d학점)",
+            messages.add(String.format("❌ 총이수학점 부족 (%d/%d학점)",
                     totalCredit, graduationRule.getTotalCredit()));
             pass = false;
+        } else {
+            messages.add(String.format("✔ 총이수학점 충족 (%d/%d학점)",
+                    totalCredit, graduationRule.getTotalCredit()));
         }
 
         if (majorCredit < requiredMajor) {
-            messages.add(String.format("전공학점 부족 (%d/%d학점)",
+            messages.add(String.format("❌ 전공학점 부족 (%d/%d학점)",
                     majorCredit, requiredMajor));
             pass = false;
+        } else {
+            messages.add(String.format("✔ 전공학점 충족 (%d/%d학점)",
+                    majorCredit, requiredMajor));
         }
 
         if (generalCredit < graduationRule.getGeneralCredit()) {
-            messages.add(String.format("교양학점 부족 (%d/%d학점)",
+            messages.add(String.format("❌ 교양학점 부족 (%d/%d학점)",
                     generalCredit, graduationRule.getGeneralCredit()));
             pass = false;
+        } else {
+            messages.add(String.format("✔ 교양학점 충족 (%d/%d학점)",
+                    generalCredit, graduationRule.getGeneralCredit()));
         }
 
         if (mscCredit < graduationRule.getMscCredit()) {
-            messages.add(String.format("MSC학점 부족 (%d/%d학점)",
+            messages.add(String.format("❌ MSC학점 부족 (%d/%d학점)",
                     mscCredit, graduationRule.getMscCredit()));
             pass = false;
+        } else {
+            messages.add(String.format("✔ MSC학점 충족 (%d/%d학점)",
+                    mscCredit, graduationRule.getMscCredit()));
         }
 
         if (majorRequired < graduationRule.getMajorRequired()) {
-            messages.add(String.format("전공필수 과목 이수 부족 (%d/%d과목)",
+            messages.add(String.format("❌ 전공필수 과목 이수 부족 (%d/%d과목)",
                     majorRequired, graduationRule.getMajorRequired()));
             pass = false;
+        } else {
+            messages.add(String.format("✔ 전공필수 과목 이수 충족 (%d/%d과목)",
+                    majorRequired, graduationRule.getMajorRequired()));
         }
 
         if (majorElective < graduationRule.getMajorElective()) {
-            messages.add(String.format("전공선택 과목 이수 부족 (%d/%d과목)",
+            messages.add(String.format("❌ 전공선택 과목 이수 부족 (%d/%d과목)",
                     majorElective, graduationRule.getMajorElective()));
             pass = false;
+        } else {
+            messages.add(String.format("✔ 전공선택 과목 이수 충족 (%d/%d과목)",
+                    majorElective, graduationRule.getMajorElective()));
         }
 
         if (facultyRequired < graduationRule.getFacultyRequired()) {
-            messages.add(String.format("학부기초필수 과목 이수 부족 (%d/%d과목)",
+            messages.add(String.format("❌ 학부기초필수 과목 이수 부족 (%d/%d과목)",
                     facultyRequired, graduationRule.getFacultyRequired()));
             pass = false;
+        } else {
+            messages.add(String.format("✔ 학부기초필수 과목 이수 충족 (%d/%d과목)",
+                    facultyRequired, graduationRule.getFacultyRequired()));
         }
 
         if (facultyElective < graduationRule.getFacultyElective()) {
-            messages.add(String.format("학부기초선택 과목 이수 부족 (%d/%d과목)",
+            messages.add(String.format("❌ 학부기초선택 과목 이수 부족 (%d/%d과목)",
                     facultyElective, graduationRule.getFacultyElective()));
             pass = false;
+        } else {
+            messages.add(String.format("✔ 학부기초선택 과목 이수 충족 (%d/%d과목)",
+                    facultyElective, graduationRule.getFacultyElective()));
         }
 
         if (pass)
