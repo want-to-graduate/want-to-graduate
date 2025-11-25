@@ -10,7 +10,6 @@ import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 
 // 백엔드 쪽 클래스 import (패키지명 graduate 기준)
@@ -31,10 +30,12 @@ public class SelectCoursePage extends JPanel {
 
     // 사용자가 담은 과목들 (누적)
     private final List<Course> selectedCourses = new ArrayList<>();
-    private final Consumer<List<Integer>> onResultRequested;
     // 테이블
     private final DefaultTableModel tableModel;
     private final JTable courseTable;
+
+    private final StudentCourseCount scc;
+    private final Student student;
 
 
     /**
@@ -47,25 +48,29 @@ public class SelectCoursePage extends JPanel {
                                 PageNavigator navigator, 
                                 List<Course> courses, 
                                 String fullId, 
-                                List<Integer> alreadySelectedList,
-                                Consumer<List<Integer>> onResultRequested) {
+                                List<Integer> alreadySelectedList) {
         this.navigator = navigator;
         this.fullId = fullId;
-        this.onResultRequested = onResultRequested;
+        
 
-        StudentCourseCount scc = new StudentCourseCount();
-        scc.run();
+        this.scc = new StudentCourseCount();
+        this.scc.run();
 
-        Student student = new Student();
-        student.inputStudent(fullId, "컴공", false, 50, scc.getDepMgr());
+        this.student = new Student();
+        this.student.inputStudent(fullId, "컴공", false, 50, scc.getDepMgr());
 
         // 과목 복사
         if (courses != null) {
             this.courseList.addAll(student.getGraduationRule().getCourses());
         }
 
-        if (alreadySelectedList != null) {
+        if (alreadySelectedList != null && !alreadySelectedList.isEmpty()) {
+            // 기존 수강 과목을 Student 에 로드
+            student.loadStudentCourses(alreadySelectedList, scc.getCourseMgr());
+
+            // id 리스트 및 과목 리스트를 이 페이지 상태에 반영
             this.selectedCourseIndexes.addAll(alreadySelectedList);
+            this.selectedCourses.addAll(student.getTakenCourses());
         }
 
         // UI
@@ -143,15 +148,19 @@ public class SelectCoursePage extends JPanel {
                     jc.setBorder(new EmptyBorder(0, 16, 0, 16));
                 }
 
-                boolean isRowSelected = isRowAlreadySelected(row);
+                // 현재 테이블에서 선택된 행인지 여부
+                boolean isCurrentlySelected = isRowSelected(row);
+                // 기존에 이미 수강했던 과목인지 여부 (id 기준)
+                boolean isPreviouslyTaken = isRowAlreadySelected(row);
 
-                // 선택/비선택 배경색
-                if (isRowSelected(row)) {
-                    comp.setBackground(new Color(0xE5F0FF));  // 연한 파란색
-                } else if (isRowSelected) {
+                if (isCurrentlySelected) {
+                    // 이번에 클릭해서 선택한 행은 파란색
+                    comp.setBackground(new Color(0xE5F0FF));
+                } else if (isPreviouslyTaken) {
+                    // 이미 수강한 과목(초기에 전달된 리스트)은 연한 노란색
                     comp.setBackground(new Color(0xFEF3C7));
-                }
-                 else {
+                } else {
+                    // 그 외는 줄무늬 배경
                     if (row % 2 == 0) {
                         comp.setBackground(Color.WHITE);
                     } else {
@@ -240,10 +249,7 @@ public class SelectCoursePage extends JPanel {
         addButton.addActionListener(e -> addSelectedCourses()); // 선택한 과목을 누적
         showButton.addActionListener(e -> printAccumulatedCourses()); // 지금까지 담은 과목 출력
         resultButton.addActionListener(e -> {
-            if (onResultRequested != null) {
-                // 현재까지 담긴 과목 인덱스를 복사해서 MainApp으로 전달
-                onResultRequested.accept(new ArrayList<>(selectedCourseIndexes));
-            }
+            navigator.navigateTo(Pages.SELECT_MSC_PAGE); // MSC 페이지로 이동
         });
 
         bottomPanel.add(addButton);
@@ -275,53 +281,68 @@ public class SelectCoursePage extends JPanel {
         button.setPreferredSize(new Dimension(190, 40));
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     }
-    // 선택한 과목들을 누적하는 메서드
+    
+        
     private void addSelectedCourses() {
         int[] selectedRows = courseTable.getSelectedRows(); // 선택된 행 인덱스 배열
-        
-        if (selectedRows.length == 0) { // 행이 0이면 출력
+
+        if (selectedRows.length == 0) {
             System.out.println("선택된 과목이 없습니다.");
             return;
         }
 
-        
-        int newAdded = 0; // 새로 담긴 과목 수 
+        int newAdded = 0;                        // 새로 담긴 과목 수
+        List<Integer> newlyAddedIds = new ArrayList<>(); // 이번에 새로 추가된 id만 모으기
 
         for (int rowIndex : selectedRows) {
+            // 0번 컬럼은 ID
+            Object value = tableModel.getValueAt(rowIndex, 0);
+            if (value == null) {
+                continue;
+            }
+
+            int courseId;
+            try {
+                courseId = Integer.parseInt(value.toString());
+            } catch (NumberFormatException e) {
+                System.out.println("ID 파싱 오류: " + value);
+                continue;
+            }
+
+            // 이미 선택된 ID면 스킵 (중복 방지)
+            if (selectedCourseIndexes.contains(courseId)) {
+                continue;
+            }
+
+            // selectedCourseIndexes에 새 ID 추가
+            selectedCourseIndexes.add(courseId);
+            newlyAddedIds.add(courseId);
+
+            // UI에서 보여줄 selectedCourses에도 과목 객체 추가
             Course c = courseList.get(rowIndex);
-
-            int code = c.getId();
-
-            String line = (String) tableModel.getValueAt(rowIndex, 0);
-            String firstToken = line.split(" ")[0];
-
-            if (!selectedCourses.contains(c)) { // 과목이 누적 목록에 없으면
+            if (!selectedCourses.contains(c)) {
                 selectedCourses.add(c);
             }
-            
 
-            try {
-                int courseIndex = Integer.parseInt(firstToken);
-
-                boolean alreadyAddedIndex = selectedCourseIndexes.contains(courseIndex);
-                
-                if (!alreadyAddedIndex) {
-                    selectedCourseIndexes.add(courseIndex);
-                    System.out.println("새로 담은 과목 코드: " + courseIndex);
-                    newAdded++;
-                }
-            } catch (NumberFormatException e) {
-                // 첫 번째 토큰이 정수가 아닌 경우 무시
-                System.out.println("code 오류남");
-            }
+            newAdded++;
+            System.out.println("새로 담은 과목 코드: " + courseId);
         }
 
-        if (newAdded == 0) { // 새로 담긴 과목이 없으면
-            System.out.println("이미 담겨 있는 과목만 선택되었습니다."); // 출력
-        } else {
-            System.out.println("새로 담은 과목: " + newAdded + "개"); // 새로담으면 출력
+        if (newlyAddedIds.isEmpty()) {
+            System.out.println("이미 담겨 있는 과목만 선택되었습니다.");
+            return;
         }
-        courseTable.repaint(); // 테이블 다시 그리기
+
+        // ★ 파일에 쓸 Student 상태를 "선택된 ID 전체" 기준으로 재구성
+        Student fileStudent = new Student();
+        fileStudent.inputStudent(fullId, "컴공", false, 50, scc.getDepMgr());
+        // 지금까지 선택된 전체 id 리스트로 수강 과목 구성
+        fileStudent.loadStudentCourses(selectedCourseIndexes, scc.getCourseMgr());
+        // 그 상태를 파일에 저장 (중복 없이 덮어쓰기)
+        scc.saveStudentFile(fileStudent);
+
+        System.out.println("새로 담은 과목: " + newAdded + "개");
+        courseTable.repaint(); // 색깔 업데이트
     }
 
     // 지금까지 담긴 과목들을 콘솔에 출력
@@ -358,4 +379,3 @@ public class SelectCoursePage extends JPanel {
     }
 
 }
-
