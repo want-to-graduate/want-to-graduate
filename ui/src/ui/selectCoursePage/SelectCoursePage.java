@@ -43,7 +43,12 @@ public class SelectCoursePage extends JPanel {
      * @param entryYear 선택한 학번
      */
 
-    public SelectCoursePage(PageNavigator navigator, List<Course> courses, String fullId, Consumer<List<Integer>> onResultRequested) {
+    public SelectCoursePage(
+                                PageNavigator navigator, 
+                                List<Course> courses, 
+                                String fullId, 
+                                List<Integer> alreadySelectedList,
+                                Consumer<List<Integer>> onResultRequested) {
         this.navigator = navigator;
         this.fullId = fullId;
         this.onResultRequested = onResultRequested;
@@ -57,6 +62,10 @@ public class SelectCoursePage extends JPanel {
         // 과목 복사
         if (courses != null) {
             this.courseList.addAll(student.getGraduationRule().getCourses());
+        }
+
+        if (alreadySelectedList != null) {
+            this.selectedCourseIndexes.addAll(alreadySelectedList);
         }
 
         // UI
@@ -134,10 +143,15 @@ public class SelectCoursePage extends JPanel {
                     jc.setBorder(new EmptyBorder(0, 16, 0, 16));
                 }
 
+                boolean isRowSelected = isRowAlreadySelected(row);
+
                 // 선택/비선택 배경색
                 if (isRowSelected(row)) {
                     comp.setBackground(new Color(0xE5F0FF));  // 연한 파란색
-                } else {
+                } else if (isRowSelected) {
+                    comp.setBackground(new Color(0xFEF3C7));
+                }
+                 else {
                     if (row % 2 == 0) {
                         comp.setBackground(Color.WHITE);
                     } else {
@@ -307,6 +321,7 @@ public class SelectCoursePage extends JPanel {
         } else {
             System.out.println("새로 담은 과목: " + newAdded + "개"); // 새로담으면 출력
         }
+        courseTable.repaint(); // 테이블 다시 그리기
     }
 
     // 지금까지 담긴 과목들을 콘솔에 출력
@@ -327,4 +342,20 @@ public class SelectCoursePage extends JPanel {
     public List<Course> getSelectedCourses() { // 선택한 과목 목록 반환
         return new ArrayList<>(selectedCourses);  
     }
+
+    private boolean isRowAlreadySelected(int rowIndex) {
+        Object value = tableModel.getValueAt(rowIndex, 0);
+        if (value == null) {
+            return false;
+        }
+
+        try {
+            int id = Integer.parseInt(value.toString());
+            return selectedCourseIndexes.contains(id);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
 }
+

@@ -89,6 +89,7 @@ public class MainApp {
                     50,
                     scc.getDepMgr()
                 );
+                currentStudent.loadStudentCourses(listSelectId, courseMgr);
             } else {
                 System.out.println("없는 학번이에여,,, 학번 파일 새로 만들게여,,,");
                 currentStudent.inputStudent(
@@ -107,6 +108,9 @@ public class MainApp {
                     .getGraduationRule()
                     .getCourses();
 
+            List<Integer> alreadySelectedList = listSelectId;
+
+            System.out.println("선택한 과목 인덱스 리스트: " + alreadySelectedList);
             
             Consumer<List<Integer>> onResultRequested = (List<Integer> selectedIndexes) -> {
             
@@ -131,6 +135,7 @@ public class MainApp {
                 navigator,
                 curriculumCourses,    // 해당 학번/학과 교과 목록
                 fullId,
+                alreadySelectedList,
                 onResultRequested     // "결과 보기" 버튼이 눌렸을 때
             );
 
