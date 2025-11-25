@@ -5,6 +5,7 @@ public enum CourseType {
         MAJOR_ELECTIVE("전선"),
         FACULTY_REQUIRED("학필"),
         FACULTY_ELECTIVE("학선"),
+        MSC("msc"),
         NONE("컴터");
 
     private final String description;
