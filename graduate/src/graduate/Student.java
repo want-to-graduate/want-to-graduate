@@ -5,6 +5,8 @@ import java.util.List;
 
 public class Student {
 
+	// 전체 학번(9자리)
+	private String fullId;
     //학번
     private int year;
     private GraduationRule graduationRule;
@@ -25,6 +27,13 @@ public class Student {
     private int facultyRequired = 0;
     private int facultyElective = 0;
 
+    // fullId 저장, year 추출, 그 외는 기존 inputStudent 메서드와 동일
+    public void inputStudent(String fullId, String depName, boolean isDoubleMajor, int generalCredit, Manager<GraduationRule> depMgr) {
+    	this.fullId = fullId;
+    	// fullId에서 year 추출(예: 202200000 -> 22)
+    	this.year = Integer.parseInt(fullId.substring(2, 4));
+    	inputStudent(year, depName, isDoubleMajor, generalCredit, depMgr);
+    }
 
     public void inputStudent(int year, String depName, boolean isDoubleMajor, int generalCredit, Manager<GraduationRule> depMgr) {
         this.year = year;
@@ -33,7 +42,14 @@ public class Student {
         this.generalCredit = generalCredit;
         totalCredit += generalCredit;
     }
-
+    
+    // 학생 파일에서 읽은 과목 id 리스트 누적
+    public void loadStudentCourses(List<Integer> courseIds, Manager<Course> courseMgr) {
+    	for (Integer id : courseIds) {
+        	selectCourse(String.valueOf(id), courseMgr);
+    	}
+    }
+    
   //낱개 과목 추가
     public void selectCourse(int courseIndex, Manager<Course> courseMgr) {
         Course c = courseMgr.mList.get(courseIndex);
@@ -69,8 +85,22 @@ public class Student {
         }
 
     }
+    
+    // 학생 파일의 과목 id 기반, 계산 로직은 기존 selectCourse 메서드와 동일
+    public void selectCourse(String courseId, Manager<Course> courseMgr) {
+        Course c = courseMgr.find(courseId);
+        takenCourses.add(c);
+        totalCredit += c.getCredit();
 
-
+        switch (c.getType()) {
+            case MAJOR_REQUIRED:  majorRequired++; majorCredit += c.getCredit(); break;
+            case MAJOR_ELECTIVE:  majorElective++; majorCredit += c.getCredit(); break;
+            case FACULTY_REQUIRED: facultyRequired++; majorCredit += c.getCredit(); break;
+            case FACULTY_ELECTIVE: facultyElective++; majorCredit += c.getCredit(); break;
+            case MSC: mscCredit += c.getCredit(); break;
+        }
+    }
+   
     public List<String> checkGraduation() {
         boolean pass = true;
         List<String> messages = new ArrayList<>();
@@ -158,5 +188,20 @@ public class Student {
 
     public GraduationRule getGraduationRule() {
         return graduationRule;
+    }
+    
+    // fullId getter
+    public String getFullId() {
+    	return fullId;
+    }
+    
+    // year getter
+    public int getYear() {
+    	return year;
+    }
+    
+    // 저장용
+    public List<Course> getTakenCourses() {
+    	return takenCourses;
     }
 }

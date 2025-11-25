@@ -1,5 +1,6 @@
 package graduate;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class StudentCourseCount {
@@ -26,7 +27,6 @@ public class StudentCourseCount {
             }
         });
 
-
         depMgr.readAll("department.txt", new Factory<GraduationRule>() {
             @Override
             public GraduationRule create() {
@@ -34,17 +34,76 @@ public class StudentCourseCount {
             }
         });
     }
+    
+    // 어떤 학생 수강 내역 파일 읽을 건지 결정
+    public List<Integer> loadStudentFile(String fullId) {
+    	String filename = "studentData/" + fullId + ".txt";
+    	return courseMgr.readFile(filename);
+    }
+    
+    public void saveStudentFile(Student s) {
+    	String filename = "studentData/" + s.getFullId() + ".txt";
+    	
+    	List<String> out = new ArrayList<>();
+    	for (Course c : s.getTakenCourses()) {
+    		out.add(String.valueOf(c.getId()));
+    	}
+    	out.add("-");
+    	
+    	try {
+    		java.nio.file.Files.write(
+    			java.nio.file.Paths.get(filename),
+    			out,
+    			java.nio.file.StandardOpenOption.CREATE,
+    			java.nio.file.StandardOpenOption.TRUNCATE_EXISTING
+    		);
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    }
 
   //여기는 프론트에서 예시
     public static void main(String[] args) {
 
         StudentCourseCount main = new StudentCourseCount();
-        main.run();
+        main.run(); // course.txt, msc.txt, department.txt 로드
+        
         //학생 객체 만들어서 학생의 정보 넣어주기
         Student student = new Student();
 
-        //이제 MSC는 교양이 아닌 전공처럼 직접 넣어주기로함.
-        student.inputStudent(22, "컴공", false, 50, main.getDepMgr());
+        // 학번(9자리)
+        String fullId = "202211548";
+        
+        // fullId.txt에서 과목 id 로드
+        List<Integer> ids = main.loadStudentFile(fullId);
+        
+        if (!ids.isEmpty()) {
+        	// fullId.txt 파일 있는 경우
+        	student.inputStudent(fullId, "컴공", false, 50, main.getDepMgr());
+        	student.loadStudentCourses(ids, main.getCourseMgr());
+        } else {
+        // fullId.txt 없는 경우
+        System.out.println("파일 없음");
+        
+        // 1: 새 파일 생성, 즉 신규 fullId 등록
+        int noFileChoice = 1;
+        // 0: fullId 등록 없이 22~25학번 선택
+        if (noFileChoice == 0) {
+            //이제 MSC는 교양이 아닌 전공처럼 직접 넣어주기로함.
+            student.inputStudent(22, "컴공", false, 50, main.getDepMgr());
+          //학생이 들은 전공 과목 넣어주기
+            student.selectCourses(List.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10), main.getCourseMgr());
+            System.out.println();
+            student.selectCourses(List.of(101, 102, 103), main.getCourseMgr());
+            System.out.println();
+        } else {
+        	// 신규 학번 등록
+        	student.inputStudent(fullId, "컴공", false, 50, main.getDepMgr());
+        	// 새 학생 파일 생성
+            main.saveStudentFile(student);
+            System.out.println("학생 파일 생성 완료");
+        }
+    }
 
         //학생이 다니는 학과의 졸업요건(필요시 사용)
         System.out.println(student.getGraduationRule().toString());
@@ -64,15 +123,6 @@ public class StudentCourseCount {
         for (Course course : mscList) {
             System.out.println(course.toString());
         }
-
-        //학생이 들은 전공 과목 넣어주기
-        student.selectCourses(List.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10), main.getCourseMgr());
-        System.out.println();
-
-
-        student.selectCourses(List.of(101, 102, 103), main.getCourseMgr());
-        System.out.println();
-
 
         //졸업요건 체크하기
         List<String> message = student.checkGraduation();
@@ -104,6 +154,6 @@ public class StudentCourseCount {
         for (Course course : result) {
             System.out.println(course.toString());
         }
-
+        main.saveStudentFile(student);
     }
 }
