@@ -132,11 +132,36 @@ public class StudentCourseCount {
             System.out.println(s);
         }
         System.out.println();
-
+        
+        // 전공 과목 삭제 및 저장
+        int deleteMajorIndex = 91;
+        student.deleteCourse(deleteMajorIndex, main.getCourseMgr());
+        // 변경된 내역을 txt에 덮어쓰기
+        main.saveStudentFile(student);
+        
+        takenCourseList = student.getTakenMajorCourseList();
+        System.out.println("삭제 후 학생이 들은 전공 과목");
+        for (String s : takenCourseList) {
+            System.out.println(s);
+        }
+        System.out.println();
 
         //학생이 들은 MSC과목 가져오기
         System.out.println("학생이 들은 MSC 과목");
         List<String> takenMSCCourseList = student.getTakenMscCourseList();
+        for (String s : takenMSCCourseList) {
+            System.out.println(s);
+        }
+        System.out.println();
+        
+        // msc 과목 삭제 및 저장
+        int deleteMscIndex = 113;
+        student.deleteCourse(deleteMscIndex, main.getCourseMgr());
+        // 변경된 내역을 txt에 덮어쓰기
+        main.saveStudentFile(student);
+        
+        System.out.println("삭제 후 학생이 들은 MSC 과목");
+        takenMSCCourseList = student.getTakenMscCourseList();
         for (String s : takenMSCCourseList) {
             System.out.println(s);
         }
