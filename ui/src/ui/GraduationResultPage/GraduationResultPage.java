@@ -143,7 +143,8 @@ public class GraduationResultPage extends JPanel {
         }
 
         String last = messages.get(messages.size() - 1); 
-        boolean pass = last.contains("졸업 가능합니다"); 
+        boolean pass = last.contains("졸업 가능합니다");
+        boolean hideFinalFail = true; // 졸업 실패 문장 숨김
 
         
         resultListPanel.removeAll();
@@ -167,7 +168,30 @@ public class GraduationResultPage extends JPanel {
 
             
             for (String msg : messages) {
-                JPanel row = createResultRow("•", msg, "");
+                // 학부 기초에 대한 문장에서 /0이면 메세지를 출력하지 않음
+                if (msg.contains("학부기초필수") || msg.contains("학부기초선택")) {
+                    
+                    if (msg.contains("/0과목")) {
+                        continue;
+                    }
+                }
+
+                // 마지막 성공 문장을 숨김
+                if (hideFinalFail && msg.contains("졸업 가능합니다! 축하합니다!")) {
+                    continue;
+                }
+
+                String title = msg;
+                String detail = "";
+                
+                int idx2 = msg.indexOf("충족");
+                
+                if (idx2 != -1) {
+                    title = msg.substring(0, idx2 + 2).trim();
+                    detail = msg.substring(idx2 + 2).trim();
+                }
+
+                JPanel row = createResultRow("•", title, detail);
                 resultListPanel.add(row, rowGbc);
                 rowGbc.gridy++;
             }
@@ -177,14 +201,24 @@ public class GraduationResultPage extends JPanel {
             guideLabel.setText("아래 부족한 항목을 채우면 졸업 요건을 만족할 수 있어요.");
 
             for (String msg : messages) {
-                // 부족 항목만 카드로 보여줌
-                if (!msg.contains("부족")) {
+                // 학부 기초에 대한 문장에서 /0이면 메세지를 출력하지 않음
+                if (msg.contains("학부기초필수") || msg.contains("학부기초선택")) {
+                    
+                    if (msg.contains("/0과목")) {
+                        continue;
+                    }
+                }
+
+                // 마지막 실패 문장은 숨김
+                if (hideFinalFail && msg.contains("졸업요건을 만족하지 못했습니다")) {
                     continue;
                 }
+                
 
                 String title = msg;
                 String detail = "";
                 int idx = msg.indexOf("부족");
+                
                 if (idx != -1) {
                     title = msg.substring(0, idx + 2).trim(); 
                     detail = msg.substring(idx + 2).trim();   
