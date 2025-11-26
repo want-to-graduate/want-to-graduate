@@ -102,7 +102,13 @@ public class Student {
             case MSC: mscCredit += c.getCredit(); break;
         }
     }
-   
+    
+    // 과목 index 삭제
+    public void deleteCourse(int courseIndex, Manager<Course> courseMgr){
+        Course c = courseMgr.mList.get(courseIndex);
+        takenCourses.remove(c);
+    }
+    
     public List<String> checkGraduation() {
         boolean pass = true;
         List<String> messages = new ArrayList<>();
