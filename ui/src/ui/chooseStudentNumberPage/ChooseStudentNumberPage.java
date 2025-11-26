@@ -1,123 +1,102 @@
 package ui.chooseStudentNumberPage;
 
 import javax.swing.*;
-
+import javax.swing.text.*;
 import ui.PageNavigator;
 import ui.Pages;
-
 import java.awt.*;
-import java.util.function.IntConsumer;
+import java.util.function.Consumer;
 
 public class ChooseStudentNumberPage extends JPanel {
 
-    private PageNavigator navigator;
-    private final IntConsumer onYearSelected;
+    private final Consumer<String> onYearSelected;
+    private final PageNavigator navigator;
+    private final JTextField studentIdField;
+    private final JButton confirmButton;
 
-
-    private static String selectedYear;
-
-    
-    private static int selectedEntranceYear;
-
-    public ChooseStudentNumberPage(PageNavigator navigator, IntConsumer onYearSelected) {
+    public ChooseStudentNumberPage(PageNavigator navigator, Consumer<String> onYearSelected) {
         this.navigator = navigator;
         this.onYearSelected = onYearSelected;
 
-        
-
-        // 화면 레이아웃 설정: 가운데 정렬을 위한 GridBagLayout 사용
         setLayout(new GridBagLayout());
         setBackground(Color.WHITE);
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(15, 10, 15, 10); // 컴포넌트들 사이 여백
+        gbc.insets = new Insets(15, 10, 15, 10);
         gbc.gridx = 0;
         gbc.gridy = 0;
 
-        // 제목 라벨
-        JLabel title = new JLabel("자신의 학번을 선택해주세요.");
+        JLabel title = new JLabel("학번을 입력해주세요.");
         title.setFont(new Font("나눔고딕", Font.BOLD, 22));
         title.setForeground(new Color(50, 50, 50));
         add(title, gbc);
 
-        // 버튼 영역으로 한 줄 내려감
         gbc.gridy++;
 
-        // 학번 버튼들을 담을 패널 (2행 2열 격자)
-        JPanel buttonPanel = new JPanel(new GridLayout(2, 2, 30, 30));
-        buttonPanel.setBackground(Color.WHITE);
+        studentIdField = new JTextField();
+        studentIdField.setPreferredSize(new Dimension(240, 40));
+        studentIdField.setFont(new Font("나눔고딕", Font.PLAIN, 18));
+        studentIdField.setHorizontalAlignment(JTextField.CENTER);
 
-        // 각 학번 버튼 생성 (라벨, 실제 학번 값)
-        JButton btn25 = createYearButton("25학번", "25");
-        JButton btn24 = createYearButton("24학번", "24");
-        JButton btn23 = createYearButton("23학번", "23");
-        JButton btn22 = createYearButton("22학번", "22");
+        // 숫자만, 9자리 제한
+        ((AbstractDocument) studentIdField.getDocument()).setDocumentFilter(new DigitLengthFilter(9));
 
-        // 패널에 버튼 추가
-        buttonPanel.add(btn25);
-        buttonPanel.add(btn24);
-        buttonPanel.add(btn23);
-        buttonPanel.add(btn22);
+        add(studentIdField, gbc);
 
-        // 화면에 버튼 패널 추가
-        add(buttonPanel, gbc);
+        gbc.gridy++;
 
-        btn25.addActionListener(e -> {
-            onYearSelected.accept(2025); 
-        });
-        btn24.addActionListener(e -> {
-            onYearSelected.accept(2024); 
-        });
-        btn23.addActionListener(e -> {
-            onYearSelected.accept(2023); 
-        });
-        btn22.addActionListener(e -> {
-            onYearSelected.accept(2022); 
-        });
+        confirmButton = new JButton("다음");
+        confirmButton.setFont(new Font("나눔고딕", Font.BOLD, 16));
+        confirmButton.setPreferredSize(new Dimension(120, 40));
+        confirmButton.setFocusPainted(false);
+        add(confirmButton, gbc);
+
+        confirmButton.addActionListener(e -> handleNext());
     }
 
-    /**
-     * 학번 선택 버튼을 만들어 주는 헬퍼 메서드
-     * @param label    버튼에 보여줄 텍스트
-     * @param yearValue 내부적으로 사용할 학번 값 문자열 
-     */
-    private JButton createYearButton(String label, String yearValue) {
-        JButton btn = new JButton(label);
+    private void handleNext() {
+        String fullId = studentIdField.getText().trim();
 
-        btn.setFont(new Font("나눔고딕", Font.BOLD, 16));
-        btn.setPreferredSize(new Dimension(140, 50));
-        btn.setBackground(new Color(235, 235, 235));
-        btn.setFocusPainted(false);
-        btn.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200), 2));
+        if (fullId.length() != 9) {
+            JOptionPane.showMessageDialog(this, "학번은 정확히 9자리여야 합니다.");
+            return;
+        }
 
-        // 버튼 클릭 시 실행되는 코드
-        btn.addActionListener(e -> {
-            
-            selectedYear = yearValue;
+        
+        onYearSelected.accept(fullId);
 
+        // 다음 페이지 이동
+        navigator.navigateTo(Pages.SELECT_COURSE_PAGE);
+    }
 
-            try {
-                selectedEntranceYear = Integer.parseInt(yearValue);
-            } catch (NumberFormatException ex) {
+    // 숫자만 입력 받도록
+    static class DigitLengthFilter extends DocumentFilter {
+        private final int maxLength;
 
-                selectedEntranceYear = 0;
-                System.out.println("학번 파싱 오류: " + yearValue);
+        public DigitLengthFilter(int maxLength) {
+            this.maxLength = maxLength;
+        }
+
+        @Override
+        public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr)
+                throws BadLocationException {
+            if (string == null) return;
+            if (isNumeric(string) && fb.getDocument().getLength() + string.length() <= maxLength) {
+                super.insertString(fb, offset, string, attr);
             }
+        }
 
-            System.out.println("선택한 학번(문자열) : " + selectedYear);
-            System.out.println("선택한 학번(정수)   : " + selectedEntranceYear);
+        @Override
+        public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs)
+                throws BadLocationException {
+            if (text == null) return;
+            if (isNumeric(text) && fb.getDocument().getLength() - length + text.length() <= maxLength) {
+                super.replace(fb, offset, length, text, attrs);
+            }
+        }
 
-            // 다음 페이지(과목 선택 페이지)로 이동
-            navigator.navigateTo(Pages.SELECT_COURSE_PAGE);
-        });
-
-        return btn;
-    }
-
-    
-
-    
-    public static int getSelectedEntranceYear() {
-        return selectedEntranceYear;
+        private boolean isNumeric(String str) {
+            return str.matches("\\d+");
+        }
     }
 }

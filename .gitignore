@@ -1,7 +1,8 @@
 .vscode
 .DS_Store
+.idea
 /lib/*.jar
-
+*.iml
 # Eclipse/VSCode settings
 .classpath
 .project
