@@ -80,6 +80,7 @@ public class Student {
                 case MAJOR_ELECTIVE:  majorElective++; majorCredit += c.getCredit(); break;
                 case FACULTY_REQUIRED: facultyRequired++; majorCredit += c.getCredit(); break;
                 case FACULTY_ELECTIVE: facultyElective++; majorCredit += c.getCredit(); break;
+                case NONE: majorCredit += c.getCredit(); break;
                 case MSC: mscCredit += c.getCredit(); break;
             }
         }
@@ -97,6 +98,7 @@ public class Student {
             case MAJOR_ELECTIVE:  majorElective++; majorCredit += c.getCredit(); break;
             case FACULTY_REQUIRED: facultyRequired++; majorCredit += c.getCredit(); break;
             case FACULTY_ELECTIVE: facultyElective++; majorCredit += c.getCredit(); break;
+            case NONE: majorCredit += c.getCredit(); break;
             case MSC: mscCredit += c.getCredit(); break;
         }
     }
