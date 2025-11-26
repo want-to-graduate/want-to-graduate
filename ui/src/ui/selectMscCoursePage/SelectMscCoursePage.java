@@ -1,4 +1,4 @@
-package ui.selectMscCoursePage;
+package ui.SelectMscCoursePage;
 
 import graduate.Course;
 import graduate.StudentCourseCount;

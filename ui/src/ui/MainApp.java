@@ -14,10 +14,10 @@ import graduate.Manager;
 import graduate.Student;
 import graduate.StudentCourseCount;
 import ui.MainPage.MainPage;
-import ui.chooseStudentNumberPage.ChooseStudentNumberPage;
-import ui.selectCoursePage.SelectCoursePage;
+import ui.SelectCoursePage.SelectCoursePage;
+import ui.SelectMscCoursePage.SelectMscCoursePage;
+import ui.ChooseStudentNumberPage.ChooseStudentNumberPage;
 import ui.GraduationResultPage.GraduationResultPage;
-import ui.selectMscCoursePage.SelectMscCoursePage;
 
 public class MainApp {
 

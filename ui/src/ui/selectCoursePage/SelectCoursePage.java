@@ -1,4 +1,4 @@
-package ui.selectCoursePage;
+package ui.SelectCoursePage;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

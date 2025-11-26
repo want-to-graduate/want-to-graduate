@@ -1,4 +1,4 @@
-package ui.chooseStudentNumberPage;
+package ui.ChooseStudentNumberPage;
 
 import javax.swing.*;
 import javax.swing.text.*;
