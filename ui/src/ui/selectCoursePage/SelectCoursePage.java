@@ -225,7 +225,7 @@ public class SelectCoursePage extends JPanel {
         bottomPanel.setOpaque(false);
 
         JButton addButton = new JButton("선택 과목 담기"); // 선택한 과목을 담는 버튼
-        JButton showButton = new JButton("지금까지 담은 과목 보기"); // 지금까지 담은 과목을 console로 확인하는 버튼
+        JButton showButton = new JButton("지금까지 담은 전공 과목 보기"); // 지금까지 담은 과목을 console로 확인하는 버튼
         JButton resultButton = new JButton("MSC 과목 담기"); // 졸업의 결과를 확인할 수 있는 페이지로 이동하는 버튼
 
         stylePrimaryButton(addButton); // 주요 버튼 스타일
@@ -340,9 +340,14 @@ public class SelectCoursePage extends JPanel {
         }
 
         System.out.println("=== 지금까지 담은 과목 목록 ===");
-        for (Course c : selectedCourses) {
+        // for (Course c : selectedCourses) {
             
-            System.out.println(c.toString()); // 과목 정보들을 출력
+        //     System.out.println(c.toString()); // 과목 정보들을 출력
+        // }
+
+        List<String> takenCourseList = student.getTakenMajorCourseList();
+        for (String s : takenCourseList) {
+            System.out.println(s);
         }
         System.out.println("================================");
     }
