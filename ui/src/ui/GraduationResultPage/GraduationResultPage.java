@@ -47,8 +47,8 @@ public class GraduationResultPage extends JPanel {
         // 제목
         JLabel title = new JLabel("졸업 요건 진단 결과");
         title.setFont(new Font("나눔고딕", Font.BOLD, 28));
-        title.setHorizontalAlignment(SwingConstants.CENTER);
-        title.setBorder(BorderFactory.createEmptyBorder(25, 0, 20, 0));
+        title.setHorizontalAlignment(SwingConstants.LEFT);
+        title.setBorder(BorderFactory.createEmptyBorder(25, 40, 20, 0));
 
         header.add(title, BorderLayout.CENTER);
         add(header, BorderLayout.NORTH);
@@ -100,10 +100,7 @@ public class GraduationResultPage extends JPanel {
         });
     }
 
-    /**
-     * GeneralAndDoublePage에서 입력한 교양 학점 / 전공 유형 정보를 나중에 주입할 때 사용한다.
-     * 값이 주입되기 전에는 기본값 0 / false로 동작한다.
-     */
+    
     public void updateGeneralInfo(int generalCredits, boolean isDoubleMajor) {
         this.generalCredits = generalCredits;
         this.isDoubleMajor = isDoubleMajor;

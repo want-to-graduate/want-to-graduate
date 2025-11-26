@@ -234,11 +234,13 @@ public class SelectCoursePage extends JPanel {
 
         // 버튼 생성
         JButton backButton = new JButton("뒤로");
+        JButton deleteButton = new JButton("선택 과목 삭제");
         JButton addButton = new JButton("선택 과목 담기");
         JButton showButton = new JButton("지금까지 담은 전공 과목 보기");
         JButton resultButton = new JButton("MSC 과목 담으러 가기");
 
         styleBackButton(backButton);
+        styleSecondaryButton(deleteButton);
         stylePrimaryButton(addButton);
         styleSecondaryButton(showButton);
         stylePrimaryButton(resultButton);
@@ -248,6 +250,7 @@ public class SelectCoursePage extends JPanel {
         backButton.addActionListener(e -> {
             navigator.navigateTo(Pages.CHOOSE_STUDENT_NUMBER_PAGE);
         });
+        // deleteButton.addActionListener(e -> student.deleteCourse(, scc.getCourseMgr()));
         addButton.addActionListener(e -> addSelectedCourses());
         showButton.addActionListener(e -> printAccumulatedCourses());
         resultButton.addActionListener(e -> {
@@ -257,6 +260,7 @@ public class SelectCoursePage extends JPanel {
         // 패널에 추가
         leftPanel.add(backButton);
 
+        rightPanel.add(deleteButton);
         rightPanel.add(addButton);
         rightPanel.add(showButton);
         rightPanel.add(resultButton);
