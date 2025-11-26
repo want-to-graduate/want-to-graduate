@@ -62,14 +62,14 @@ public class ChooseStudentNumberPage extends JPanel {
             return;
         }
 
-        // 여기서는 학번 그대로만 넘김 (year 파싱은 Student가 처리)
+        
         onYearSelected.accept(fullId);
 
         // 다음 페이지 이동
         navigator.navigateTo(Pages.SELECT_COURSE_PAGE);
     }
 
-    // 숫자만 입력 + 길이 제한용 필터
+    // 숫자만 입력 받도록
     static class DigitLengthFilter extends DocumentFilter {
         private final int maxLength;
 

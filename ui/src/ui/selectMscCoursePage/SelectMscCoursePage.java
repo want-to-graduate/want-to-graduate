@@ -24,7 +24,7 @@ public class SelectMscCoursePage extends JPanel {
 
     private final PageNavigator navigator;
 
-    // 학생 전체 학번 (예: 202211548)
+    // 학생 전체 학번
     private final String fullId;
 
     // MSC 과목 목록
@@ -59,17 +59,17 @@ public class SelectMscCoursePage extends JPanel {
         this.student = new Student();
         this.student.inputStudent(fullId, "컴공", false, 50, scc.getDepMgr());
 
-        // 기존 학생 파일에서 수강 과목 ID 리스트 불러오기
+        
         List<Integer> existingIds = scc.loadStudentFile(fullId);
 
         if (existingIds != null && !existingIds.isEmpty()) {
-            // 기존에 파일에 있던 과목 ID들을 내부 리스트에 반영
+        
             for (Integer id : existingIds) {
                 if (!selectedMscCourseIds.contains(id)) {
                     selectedMscCourseIds.add(id);
                 }
             }
-            // Student 객체에도 기존 수강 과목 반영
+        
             student.loadStudentCourses(existingIds, scc.getCourseMgr());
         }
 
@@ -82,7 +82,7 @@ public class SelectMscCoursePage extends JPanel {
         }
 
         // 이미 담겨 있던 MSC 과목들을 selectedMscCourses 리스트에도 반영
-        // (ID 목록과 실제 Course 객체 리스트를 통합해서 관리)
+        
         if (!this.selectedMscCourseIds.isEmpty()) {
             for (Course c : this.courseList) {
                 if (this.selectedMscCourseIds.contains(c.getId())
@@ -92,11 +92,11 @@ public class SelectMscCoursePage extends JPanel {
             }
         }
 
-        // ===== 전체 배경 =====
+        // 배경
         setLayout(new BorderLayout());
         setBackground(new Color(0xF5F6F8));
 
-        // ===== 카드 패널 (일반 과목 페이지와 같은 스타일) =====
+        // 배경 카드 패널
         JPanel cardPanel = new JPanel(new BorderLayout(0, 20));
         cardPanel.setBackground(Color.WHITE);
         cardPanel.setBorder(new CompoundBorder(
@@ -105,7 +105,7 @@ public class SelectMscCoursePage extends JPanel {
         ));
         add(cardPanel, BorderLayout.CENTER);
 
-        // ===== 상단 헤더 영역 =====
+        // 상단 헤더 영역
         JPanel headerPanel = new JPanel();
         headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.Y_AXIS));
         headerPanel.setOpaque(false);
@@ -124,7 +124,7 @@ public class SelectMscCoursePage extends JPanel {
 
         cardPanel.add(headerPanel, BorderLayout.NORTH);
 
-        // ===== 중앙 테이블 영역 =====
+        // 중앙 테이블 영역
         JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.setOpaque(false);
         cardPanel.add(centerPanel, BorderLayout.CENTER);
@@ -220,7 +220,7 @@ public class SelectMscCoursePage extends JPanel {
         scrollPane.setBorder(new EmptyBorder(10, 0, 10, 0)); // 위아래 여백
         centerPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // ===== 하단 버튼 영역 (일반 과목 페이지와 동일 스타일) =====
+        // 버튼 영역
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         bottomPanel.setOpaque(false);
 
@@ -249,7 +249,7 @@ public class SelectMscCoursePage extends JPanel {
         fillTableWithMscCourses();
     }
 
-    // ===== 데이터 채우기 =====
+    // 데이터 채우기
     private void fillTableWithMscCourses() {
         tableModel.setRowCount(0);
         for (Course c : courseList) {
@@ -267,7 +267,7 @@ public class SelectMscCoursePage extends JPanel {
         }
     }
 
-    // ===== 선택/누적 로직 =====
+    
     private void addSelectedMscCourses() {
         int[] selectedRows = courseTable.getSelectedRows();
         if (selectedRows.length == 0) {
@@ -275,37 +275,39 @@ public class SelectMscCoursePage extends JPanel {
             return;
         }
 
-        int newAdded = 0;
-        List<Integer> newIds = new ArrayList<>();
+        
+        List<Integer> fileIds = scc.loadStudentFile(fullId);
+        if (fileIds == null) {
+            fileIds = new ArrayList<>();
+        }
 
+        int newAdded = 0;
+
+        
         for (int rowIndex : selectedRows) {
-            if (rowIndex < 0 || rowIndex >= courseList.size()) continue;
+            if (rowIndex < 0 || rowIndex >= courseList.size()) {
+                continue;
+            }
 
             Course c = courseList.get(rowIndex);
+            int courseId = c.getId();
+
+            
             if (!selectedMscCourses.contains(c)) {
                 selectedMscCourses.add(c);
             }
 
-            Object idObj = tableModel.getValueAt(rowIndex, 0);
-            if (idObj == null) continue;
+            
+            if (!selectedMscCourseIds.contains(courseId)) {
+                selectedMscCourseIds.add(courseId);
+            }
 
-            try {
-                int courseId = Integer.parseInt(idObj.toString());
-                // 이미 파일/메모리에 있는 ID면 건너뜀
-                if (!selectedMscCourseIds.contains(courseId)) {
-                    selectedMscCourseIds.add(courseId);
-                    newIds.add(courseId);
-                    newAdded++;
-                }
-            } catch (NumberFormatException ignored) {}
-        }
-
-        // 새로 담긴 ID가 있을 때만 Student/파일에 반영
-        if (!newIds.isEmpty()) {
-            // Student 객체에 새 MSC 과목 반영 (ID 기반)
-            student.loadStudentCourses(newIds, scc.getCourseMgr());
-            // 전체 수강 목록을 파일로 저장 (기존 + 새 MSC 포함)
-            scc.saveStudentFile(student);
+            
+            if (!fileIds.contains(courseId)) {
+                fileIds.add(courseId);
+                newAdded++;
+                System.out.println("새로 담은 MSC 과목 코드: " + courseId);
+            }
         }
 
         if (newAdded == 0) {
@@ -314,6 +316,14 @@ public class SelectMscCoursePage extends JPanel {
             System.out.println("새로 담은 MSC 과목: " + newAdded + "개");
         }
 
+        Student mergedStudent = new Student();
+        mergedStudent.inputStudent(fullId, "컴공", false, 50, scc.getDepMgr());
+        mergedStudent.loadStudentCourses(fileIds, scc.getCourseMgr());
+
+        
+        scc.saveStudentFile(mergedStudent);
+
+        
         courseTable.repaint();
     }
 
@@ -339,7 +349,7 @@ public class SelectMscCoursePage extends JPanel {
         return new ArrayList<>(selectedMscCourseIds);
     }
 
-    // ===== 버튼 스타일 =====
+    
     private void stylePrimaryButton(JButton button) {
         button.setFont(new Font("나눔고딕", Font.BOLD, 14));
         button.setForeground(new Color(0x111827));

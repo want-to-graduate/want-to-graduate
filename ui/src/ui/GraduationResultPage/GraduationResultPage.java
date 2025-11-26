@@ -11,25 +11,27 @@ import java.util.List;
 
 public class GraduationResultPage extends JPanel {
 
-    // 페이지 전환용 (지금은 구조상 보유만 하고 있음)
+    // 페이지 전환용
     private final PageNavigator navigator;
+    private final String fullId;   // 결과를 계산할 학생 전체 학번
 
-    // 상단 상태/가이드 문구
+    
     private final JLabel statusLabel = new JLabel();
     private final JLabel guideLabel = new JLabel();
 
-    // 상세 결과를 그리드 형태로 보여줄 패널
+    
     private final JPanel resultListPanel = new JPanel();
 
     /**
      * @param navigator 페이지 전환용
-     * @param fullId    학생 전체 학번 (예: 202015071)
+     * @param fullId    학생 전체 학번
      */
     public GraduationResultPage(PageNavigator navigator,
                                 String fullId) {
         this.navigator = navigator;
+        this.fullId = fullId;
 
-        // 전체 패널 기본 설정
+        
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
 
@@ -47,7 +49,7 @@ public class GraduationResultPage extends JPanel {
         header.add(title, BorderLayout.CENTER);
         add(header, BorderLayout.NORTH);
 
-        // 내용 영역
+        // 내용
         JPanel contentPanel = new JPanel(new GridBagLayout());
         contentPanel.setBackground(Color.WHITE);
         GridBagConstraints gbc = new GridBagConstraints();
@@ -55,7 +57,7 @@ public class GraduationResultPage extends JPanel {
         gbc.weightx = 1.0;
         gbc.insets = new Insets(5, 40, 5, 40); // 좌우 여백
 
-        // 1행 : 상태 문구
+        // 상태
         statusLabel.setFont(new Font("나눔고딕", Font.BOLD, 22));
         statusLabel.setHorizontalAlignment(SwingConstants.LEFT);
         gbc.gridy = 0;
@@ -63,13 +65,13 @@ public class GraduationResultPage extends JPanel {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         contentPanel.add(statusLabel, gbc);
 
-        // 2행: 안내 문구
+        // 안내
         guideLabel.setFont(new Font("나눔고딕", Font.PLAIN, 14));
         guideLabel.setForeground(new Color(90, 90, 90));
         gbc.gridy = 1;
         contentPanel.add(guideLabel, gbc);
 
-        // 3행: 부족 항목 리스트
+        // 리스트
         resultListPanel.setLayout(new GridBagLayout());
         resultListPanel.setBackground(Color.WHITE);
 
@@ -82,47 +84,50 @@ public class GraduationResultPage extends JPanel {
 
         add(contentPanel, BorderLayout.CENTER);
 
-        // === 여기서 바로 파일 읽고 졸업 여부 계산 ===
-        List<String> messages = computeResult(fullId);
+        // 결과 계산
+        refreshResult();
+
+        // 페이지가 보일 때마다 새로고침
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            @Override
+            public void componentShown(java.awt.event.ComponentEvent e) {
+                refreshResult();
+            }
+        });
+    }
+
+    // 결과 새로고침
+    private void refreshResult() {
+        List<String> messages = computeResult(this.fullId);
         showMessages(messages);
     }
 
-    /**
-     * 졸업 요건 계산 메서드
-     *
-     * fullId 를 이용해:
-     *  - StudentCourseCount.run() 으로 course/department 로드
-     *  - loadStudentFile(fullId) 로 학생 수강 과목 id 리스트 읽기
-     *  - Student 에 inputStudent + loadStudentCourses 로 과목 주입
-     *  - checkGraduation() 결과 리턴
-     */
+    // 졸업 요건 계산 로직
     private List<String> computeResult(String fullId) {
-        // 백엔드 메인 로직 클래스
+        
         StudentCourseCount scc = new StudentCourseCount();
-        scc.run(); // course.txt, department.txt, msc 등 로드
+        scc.run();
 
-        // 학생 객체
+        
         Student student = new Student();
 
-        // 1) 학생 파일에서 과목 id 리스트 읽기 (예: 0, 1, 2, 3, ...)
+
         List<Integer> courseIds = scc.loadStudentFile(fullId);
 
-        // 2) 기본 학생 정보 입력
-        //    inputStudent(fullId, "컴공", false, 50, depMgr) 오버로드 사용
         student.inputStudent(fullId, "컴공", false, 50, scc.getDepMgr());
 
-        // 3) 학생이 들은 과목들 로드 (전공 + MSC 등을 id 기준으로 넣어줌)
+        
         if (courseIds != null && !courseIds.isEmpty()) {
             student.loadStudentCourses(courseIds, scc.getCourseMgr());
         }
 
-        // 4) 졸업 요건 체크 후 메시지 반환
+        
         List<String> messages = student.checkGraduation();
         return messages;
     }
 
     /**
-     * 계산된 졸업 요건 결과 메시지를 UI에 반영
+     * 
      *
      * @param messages 졸업 요건 체크 결과 메시지 리스트
      */
@@ -137,10 +142,10 @@ public class GraduationResultPage extends JPanel {
             return;
         }
 
-        String last = messages.get(messages.size() - 1); // 마지막 메시지 확인
-        boolean pass = last.contains("졸업 가능합니다"); // "졸업 가능합니다" 포함 여부로 판단
+        String last = messages.get(messages.size() - 1); 
+        boolean pass = last.contains("졸업 가능합니다"); 
 
-        // 내용 초기화
+        
         resultListPanel.removeAll();
 
         GridBagConstraints rowGbc = new GridBagConstraints();
@@ -155,8 +160,17 @@ public class GraduationResultPage extends JPanel {
             statusLabel.setForeground(new Color(20, 150, 90));
             guideLabel.setText("현재까지 저장된 수강 이력 기준으로 모든 졸업 요건을 만족했습니다.");
 
-            JPanel row = createResultRow("✅", "모든 졸업 요건을 충족했습니다.", "");
-            resultListPanel.add(row, rowGbc);
+            
+            JPanel summaryRow = createResultRow("✅", "모든 졸업 요건을 충족했습니다.", "");
+            resultListPanel.add(summaryRow, rowGbc);
+            rowGbc.gridy++;
+
+            
+            for (String msg : messages) {
+                JPanel row = createResultRow("•", msg, "");
+                resultListPanel.add(row, rowGbc);
+                rowGbc.gridy++;
+            }
         } else {
             statusLabel.setText("아직 졸업까지 조금 더 필요해요.");
             statusLabel.setForeground(new Color(230, 140, 0));
@@ -172,8 +186,8 @@ public class GraduationResultPage extends JPanel {
                 String detail = "";
                 int idx = msg.indexOf("부족");
                 if (idx != -1) {
-                    title = msg.substring(0, idx + 2).trim(); // "전공학점 부족" 같은 부분
-                    detail = msg.substring(idx + 2).trim();   // "(30/60학점)" 같은 부분
+                    title = msg.substring(0, idx + 2).trim(); 
+                    detail = msg.substring(idx + 2).trim();   
                 }
 
                 JPanel row = createResultRow("•", title, detail);
@@ -186,7 +200,7 @@ public class GraduationResultPage extends JPanel {
         resultListPanel.repaint();
     }
 
-    // 결과 한 줄(카드) 만드는 메서드
+    
     private JPanel createResultRow(String iconText, String title, String detail) {
         JPanel row = new JPanel(new GridBagLayout());
         row.setBackground(new Color(248, 249, 252));
@@ -195,7 +209,7 @@ public class GraduationResultPage extends JPanel {
         GridBagConstraints c = new GridBagConstraints();
         c.insets = new Insets(0, 0, 0, 8);
 
-        // 아이콘
+        
         JLabel iconLabel = new JLabel(iconText);
         iconLabel.setFont(new Font("나눔고딕", Font.BOLD, 16));
         c.gridx = 0;
@@ -203,7 +217,7 @@ public class GraduationResultPage extends JPanel {
         c.anchor = GridBagConstraints.NORTHWEST;
         row.add(iconLabel, c);
 
-        // 제목
+        
         JLabel titleLabel = new JLabel(title);
         titleLabel.setFont(new Font("나눔고딕", Font.BOLD, 14));
         c.gridx = 1;
@@ -211,7 +225,7 @@ public class GraduationResultPage extends JPanel {
         c.anchor = GridBagConstraints.WEST;
         row.add(titleLabel, c);
 
-        // 상세
+        
         if (!detail.isEmpty()) {
             JLabel detailLabel = new JLabel(detail);
             detailLabel.setFont(new Font("나눔고딕", Font.PLAIN, 13));
