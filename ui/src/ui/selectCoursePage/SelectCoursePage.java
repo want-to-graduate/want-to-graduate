@@ -23,19 +23,15 @@ public class SelectCoursePage extends JPanel {
 
     private final PageNavigator navigator;     // 페이지 네비게이터
     private final String fullId;               // 선택한 학번의 전체 ID (예: 202015071)
-    private final List<Integer> selectedCourseIndexes = new ArrayList<>();
+    private final List<Integer> selectedCourseIndexes = new ArrayList<>(); // 사용자가 선택한 과목 ID 목록    
+    private final List<Course> courseList = new ArrayList<>(); // 전체 과목 리스트
+    private final List<Course> selectedCourses = new ArrayList<>(); // 선택한 과목 리스트
+    
+    private final DefaultTableModel tableModel; // 테이블 모델
+    private final JTable courseTable; // 과목 테이블
 
-    // 선택 가능한 과목 목록 
-    private final List<Course> courseList = new ArrayList<>();
-
-    // 사용자가 담은 과목들 
-    private final List<Course> selectedCourses = new ArrayList<>();
-    // 테이블
-    private final DefaultTableModel tableModel;
-    private final JTable courseTable;
-
-    private final StudentCourseCount scc;
-    private final Student student;
+    private final StudentCourseCount scc; // StudentCourseCount 객체
+    private final Student student; // Student 객체
 
 
     /**
