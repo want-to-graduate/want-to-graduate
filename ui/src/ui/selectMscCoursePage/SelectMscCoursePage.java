@@ -22,72 +22,61 @@ import graduate.Student;
 
 public class SelectMscCoursePage extends JPanel {
 
-    private final PageNavigator navigator;
+    private final PageNavigator navigator; // 내비게이션
+    private final String fullId; // 학번
+    private final List<Course> courseList; // 과목 리스트
+    private final List<Integer> selectedMscCourseIds = new ArrayList<>(); // 이미 들은 수업들에 대한 ID 리스트
+    private final List<Course> selectedMscCourses = new ArrayList<>(); // 선택된 MSC 과목들
 
-    // 학생 전체 학번
-    private final String fullId;
+    private final DefaultTableModel tableModel; // 테이블 모델
+    private final JTable courseTable; // 과목 테이블
 
-    // MSC 과목 목록
-    private final List<Course> courseList;
+    private final StudentCourseCount scc; // StudentCourseCount 객체
+    private final Student student; // Student 객체
 
-    // 이미 담긴 MSC 과목 ID 목록
-    private final List<Integer> selectedMscCourseIds = new ArrayList<>();
 
-    // 새로 담은 MSC 과목 리스트
-    private final List<Course> selectedMscCourses = new ArrayList<>();
-
-    // 테이블 모델 & 테이블
-    private final DefaultTableModel tableModel;
-    private final JTable courseTable;
-
-    private final StudentCourseCount scc;
-    private final Student student;
-
+    /**
+     * 
+     * @param navigator // 내비게이션
+     * @param fullId // 학번
+     * @param mscCourses // msc 수업 리스트
+     * @param selectedIndexes // 이미 들은 수업 id 리스트
+     */
     public SelectMscCoursePage(
             PageNavigator navigator,
             String fullId,
             List<Course> mscCourses,
             List<Integer> selectedIndexes
     ) {
-        this.navigator = navigator;
-        this.courseList = mscCourses != null ? mscCourses : new ArrayList<>();
-        this.fullId = fullId;
+        this.navigator = navigator; // 내비게이션 
+        this.courseList = mscCourses != null ? mscCourses : new ArrayList<>(); // mscCourse가 있으면 mscCourse를 넣고 아니면 새로운 객체 생성
+        this.fullId = fullId; // 학번
 
-        this.scc = new StudentCourseCount();
-        this.scc.run();
+        this.scc = new StudentCourseCount(); // StudentCourseCount 객체 생성
+        this.scc.run(); // 실행
 
-        this.student = new Student();
-        this.student.inputStudent(fullId, "컴공", false, 50, scc.getDepMgr());
+        this.student = new Student(); // Student 객체 생성
+        this.student.inputStudent(fullId, "컴공", false, 50, scc.getDepMgr()); // 학생에 대한 정보 삽입
 
         
-        List<Integer> existingIds = scc.loadStudentFile(fullId);
+        List<Integer> existingIds = scc.loadStudentFile(fullId); // 학번에 해당하는 파일을 불러옴
 
-        if (existingIds != null && !existingIds.isEmpty()) {
+        if (existingIds != null && !existingIds.isEmpty()) { // 학번에 해당 파일이 비어있지 않으면
         
-            for (Integer id : existingIds) {
-                if (!selectedMscCourseIds.contains(id)) {
-                    selectedMscCourseIds.add(id);
+            for (Integer id : existingIds) { // id에 대한 내용을
+                if (!selectedMscCourseIds.contains(id)) { // selectedMscCourseIds에 포함되어 있지 않으면
+                    selectedMscCourseIds.add(id); // 추가
                 }
             }
         
-            student.loadStudentCourses(existingIds, scc.getCourseMgr());
+            student.loadStudentCourses(existingIds, scc.getCourseMgr()); // 학생이 이미 들은 수업에 대한 정보를 load
         }
-
-        if (selectedIndexes != null) {
-            for (Integer id : selectedIndexes) {
-                if (!selectedMscCourseIds.contains(id)) {
-                    selectedMscCourseIds.add(id);
-                }
-            }
-        }
-
-        // 이미 담겨 있던 MSC 과목들을 selectedMscCourses 리스트에도 반영
         
-        if (!this.selectedMscCourseIds.isEmpty()) {
-            for (Course c : this.courseList) {
-                if (this.selectedMscCourseIds.contains(c.getId())
-                        && !this.selectedMscCourses.contains(c)) {
-                    this.selectedMscCourses.add(c);
+        if (!this.selectedMscCourseIds.isEmpty()) { // selectedMscCourseIds가 비어있지 않으면
+            for (Course c : this.courseList) { // 과목 리스트를 순회하며
+                if (this.selectedMscCourseIds.contains(c.getId()) // selectedMscCourseIds에 포함되어 있으면서
+                        && !this.selectedMscCourses.contains(c)) { // selectedMscCourses에 포함되어 있지 않으면
+                    this.selectedMscCourses.add(c); // selectedMscCourses에 추가
                 }
             }
         }
