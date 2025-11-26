@@ -127,7 +127,7 @@ public class StudentCourseCount {
 
         //학생이 들은 과목 가져오기(필요시 사용)
         System.out.println("학생이 들은 전공 과목");
-        List<String> takenCourseList = student.getTakenCourseList();
+        List<String> takenCourseList = student.getTakenMajorCourseList();
         for (String s : takenCourseList) {
             System.out.println(s);
         }

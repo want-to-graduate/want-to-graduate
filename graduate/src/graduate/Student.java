@@ -189,7 +189,7 @@ public class Student {
     }
 
  // MSC과목을 제외한 전공과목만 가져오기
-    public List<String> getTakenCourseList() {
+    public List<String> getTakenMajorCourseList() {
         List<String> result = new ArrayList<>();
         for (Course c : takenCourses) {
             if (c.getType() != CourseType.MSC) {
