@@ -220,52 +220,87 @@ public class SelectCoursePage extends JPanel {
         scrollPane.setBorder(new EmptyBorder(10, 0, 10, 0));  // 스크롤 패널 테두리
         centerPanel.add(scrollPane, BorderLayout.CENTER); // 패널에 스크롤 패널 추가
 
-        // 하단 버튼 선택
-        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-        bottomPanel.setOpaque(false);
+        // === 하단 버튼 영역 (좌/우 분리) ===
+        JPanel bottomWrapper = new JPanel(new BorderLayout());
+        bottomWrapper.setOpaque(false);
 
-        JButton addButton = new JButton("선택 과목 담기"); // 선택한 과목을 담는 버튼
-        JButton showButton = new JButton("지금까지 담은 전공 과목 보기"); // 지금까지 담은 과목을 console로 확인하는 버튼
-        JButton resultButton = new JButton("MSC 과목 담기"); // 졸업의 결과를 확인할 수 있는 페이지로 이동하는 버튼
+        // 왼쪽 (뒤로가기)
+        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        leftPanel.setOpaque(false);
 
-        stylePrimaryButton(addButton); // 주요 버튼 스타일
-        styleSecondaryButton(showButton); // 보조 버튼 스타일
-        stylePrimaryButton(resultButton); // 주요 버튼 스타일
+        // 오른쪽 (기존 버튼들)
+        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        rightPanel.setOpaque(false);
 
-        // 버튼 클릭 시 동작 연결
-        addButton.addActionListener(e -> addSelectedCourses()); // 선택한 과목을 누적
-        showButton.addActionListener(e -> printAccumulatedCourses()); // 지금까지 담은 과목 출력
+        // 버튼 생성
+        JButton backButton = new JButton("뒤로");
+        JButton addButton = new JButton("선택 과목 담기");
+        JButton showButton = new JButton("지금까지 담은 전공 과목 보기");
+        JButton resultButton = new JButton("MSC 과목 담으러 가기");
+
+        styleBackButton(backButton);
+        stylePrimaryButton(addButton);
+        styleSecondaryButton(showButton);
+        stylePrimaryButton(resultButton);
+        
+
+        // 이벤트
+        backButton.addActionListener(e -> {
+            navigator.navigateTo(Pages.CHOOSE_STUDENT_NUMBER_PAGE);
+        });
+        addButton.addActionListener(e -> addSelectedCourses());
+        showButton.addActionListener(e -> printAccumulatedCourses());
         resultButton.addActionListener(e -> {
-            navigator.navigateTo(Pages.SELECT_MSC_PAGE); // MSC 페이지로 이동
+            navigator.navigateTo(Pages.SELECT_MSC_PAGE);
         });
 
-        bottomPanel.add(addButton);
-        bottomPanel.add(showButton);
-        bottomPanel.add(resultButton);
+        // 패널에 추가
+        leftPanel.add(backButton);
 
-        cardPanel.add(bottomPanel, BorderLayout.SOUTH);
+        rightPanel.add(addButton);
+        rightPanel.add(showButton);
+        rightPanel.add(resultButton);
+
+        bottomWrapper.add(leftPanel, BorderLayout.WEST);
+        bottomWrapper.add(rightPanel, BorderLayout.EAST);
+
+        cardPanel.add(bottomWrapper, BorderLayout.SOUTH);
     }
 
     
     // 버튼 스타일링
-    private void stylePrimaryButton(JButton button) {
+    public void stylePrimaryButton(JButton button) {
         button.setFont(new Font("나눔고딕", Font.BOLD, 14));
-        button.setForeground(new Color(0x111827));
-        button.setBackground(new Color(0x2563EB));
+        button.setBackground(new Color(0xE0F2FE));
+        button.setForeground(new Color(0x0F172A));
+        button.setBorder(new LineBorder(new Color(0x7DD3FC), 1, true));
+        button.setOpaque(true);
+        button.setContentAreaFilled(true);
         button.setFocusPainted(false);
-        button.setBorder(new LineBorder(new Color(0x1D4ED8), 1, true));
         button.setPreferredSize(new Dimension(150, 40));
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     }
 
     // 버튼 스타일링
-    private void styleSecondaryButton(JButton button) {
+    public void styleSecondaryButton(JButton button) {
         button.setFont(new Font("나눔고딕", Font.BOLD, 14));
         button.setForeground(new Color(0x111827));
         button.setBackground(new Color(0xE5E7EB));
         button.setFocusPainted(false);
         button.setBorder(new LineBorder(new Color(0xD1D5DB), 1, true));
         button.setPreferredSize(new Dimension(190, 40));
+        button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    }
+
+    public static void styleBackButton(JButton button) {
+        button.setFont(new Font("나눔고딕", Font.BOLD, 14));
+        button.setForeground(new Color(0x111827));
+        button.setBackground(new Color(0xE5E7EB));
+        button.setFocusPainted(false);
+        button.setBorder(new LineBorder(new Color(0xD1D5DB), 1, true));
+        button.setOpaque(true);
+        button.setContentAreaFilled(true);
+        button.setPreferredSize(new Dimension(80, 40));
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     }
     

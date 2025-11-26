@@ -210,17 +210,30 @@ public class SelectMscCoursePage extends JPanel {
         centerPanel.add(scrollPane, BorderLayout.CENTER);
 
         // 버튼 영역
-        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-        bottomPanel.setOpaque(false);
 
+        JPanel bottomWrapper = new JPanel(new BorderLayout());
+        bottomWrapper.setOpaque(false);
+
+
+        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        leftPanel.setOpaque(false);
+
+        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        rightPanel.setOpaque(false);
+
+        JButton backButton = new JButton("뒤로");
         JButton addButton = new JButton("MSC 과목 담기");
         JButton showButton = new JButton("지금까지 담은 MSC 과목 보기");
         JButton nextButton = new JButton("졸업 결과 보기");
 
+        styleBackButton(backButton);
         stylePrimaryButton(addButton);
         styleSecondaryButton(showButton);
         stylePrimaryButton(nextButton);
 
+        backButton.addActionListener(e -> {
+            navigator.navigateTo(Pages.SELECT_COURSE_PAGE);
+        });
         addButton.addActionListener(e -> addSelectedMscCourses());
         showButton.addActionListener(e -> printAccumulatedMscCourses());
         
@@ -228,11 +241,16 @@ public class SelectMscCoursePage extends JPanel {
             navigator.navigateTo(Pages.GRADUATION_RESULT_PAGE);
         });
 
-        bottomPanel.add(addButton);
-        bottomPanel.add(showButton);
-        bottomPanel.add(nextButton);
+        leftPanel.add(backButton);
 
-        cardPanel.add(bottomPanel, BorderLayout.SOUTH);
+        rightPanel.add(addButton);
+        rightPanel.add(showButton);
+        rightPanel.add(nextButton);
+
+        bottomWrapper.add(leftPanel, BorderLayout.WEST);
+        bottomWrapper.add(rightPanel, BorderLayout.EAST);
+
+        cardPanel.add(bottomWrapper, BorderLayout.SOUTH);
 
         // 테이블 데이터 채우기
         fillTableWithMscCourses();
@@ -341,10 +359,12 @@ public class SelectMscCoursePage extends JPanel {
     
     private void stylePrimaryButton(JButton button) {
         button.setFont(new Font("나눔고딕", Font.BOLD, 14));
-        button.setForeground(new Color(0x111827));
-        button.setBackground(new Color(0x2563EB));
+        button.setBackground(new Color(0xE0F2FE));
+        button.setForeground(new Color(0x0F172A));
+        button.setBorder(new LineBorder(new Color(0x7DD3FC), 1, true));
+        button.setOpaque(true);
+        button.setContentAreaFilled(true);
         button.setFocusPainted(false);
-        button.setBorder(new LineBorder(new Color(0x1D4ED8), 1, true));
         button.setPreferredSize(new Dimension(150, 40));
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     }
@@ -356,6 +376,18 @@ public class SelectMscCoursePage extends JPanel {
         button.setFocusPainted(false);
         button.setBorder(new LineBorder(new Color(0xD1D5DB), 1, true));
         button.setPreferredSize(new Dimension(190, 40));
+        button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    }
+
+    private static void styleBackButton(JButton button) {
+        button.setFont(new Font("나눔고딕", Font.BOLD, 14));
+        button.setForeground(new Color(0x111827));
+        button.setBackground(new Color(0xE5E7EB));
+        button.setFocusPainted(false);
+        button.setBorder(new LineBorder(new Color(0xD1D5DB), 1, true));
+        button.setOpaque(true);
+        button.setContentAreaFilled(true);
+        button.setPreferredSize(new Dimension(80, 40));
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     }
 }
