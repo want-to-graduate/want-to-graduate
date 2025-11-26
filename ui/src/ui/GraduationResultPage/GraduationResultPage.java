@@ -9,13 +9,17 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
+
 public class GraduationResultPage extends JPanel {
 
     // 페이지 전환용
     private final PageNavigator navigator;
     private final String fullId;   // 결과를 계산할 학생 전체 학번
 
-    
+    // GeneralAndDoublePage에서 입력받은 값 (초기값은 0 / false 로 시작하고, 나중에 setter로 갱신)
+    private int generalCredits = 0;      // 이수한 교양 학점
+    private boolean isDoubleMajor = false;   // 복수전공 여부 (false = 단일전공)
+
     private final JLabel statusLabel = new JLabel();
     private final JLabel guideLabel = new JLabel();
 
@@ -96,6 +100,15 @@ public class GraduationResultPage extends JPanel {
         });
     }
 
+    /**
+     * GeneralAndDoublePage에서 입력한 교양 학점 / 전공 유형 정보를 나중에 주입할 때 사용한다.
+     * 값이 주입되기 전에는 기본값 0 / false로 동작한다.
+     */
+    public void updateGeneralInfo(int generalCredits, boolean isDoubleMajor) {
+        this.generalCredits = generalCredits;
+        this.isDoubleMajor = isDoubleMajor;
+    }
+
     // 결과 새로고침
     private void refreshResult() {
         List<String> messages = computeResult(this.fullId);
@@ -114,7 +127,7 @@ public class GraduationResultPage extends JPanel {
 
         List<Integer> courseIds = scc.loadStudentFile(fullId);
 
-        student.inputStudent(fullId, "컴공", false, 50, scc.getDepMgr());
+        student.inputStudent(fullId, "컴공", isDoubleMajor, generalCredits, scc.getDepMgr());
 
         
         if (courseIds != null && !courseIds.isEmpty()) {
