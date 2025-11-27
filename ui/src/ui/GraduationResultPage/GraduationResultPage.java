@@ -9,13 +9,17 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
+
 public class GraduationResultPage extends JPanel {
 
     // 페이지 전환용
     private final PageNavigator navigator;
     private final String fullId;   // 결과를 계산할 학생 전체 학번
 
-    
+    // GeneralAndDoublePage에서 입력받은 값 (초기값은 0 / false 로 시작하고, 나중에 setter로 갱신)
+    private int generalCredits = 0;      // 이수한 교양 학점
+    private boolean isDoubleMajor = false;   // 복수전공 여부 (false = 단일전공)
+
     private final JLabel statusLabel = new JLabel();
     private final JLabel guideLabel = new JLabel();
 
@@ -43,8 +47,8 @@ public class GraduationResultPage extends JPanel {
         // 제목
         JLabel title = new JLabel("졸업 요건 진단 결과");
         title.setFont(new Font("나눔고딕", Font.BOLD, 28));
-        title.setHorizontalAlignment(SwingConstants.CENTER);
-        title.setBorder(BorderFactory.createEmptyBorder(25, 0, 20, 0));
+        title.setHorizontalAlignment(SwingConstants.LEFT);
+        title.setBorder(BorderFactory.createEmptyBorder(25, 40, 20, 0));
 
         header.add(title, BorderLayout.CENTER);
         add(header, BorderLayout.NORTH);
@@ -96,6 +100,12 @@ public class GraduationResultPage extends JPanel {
         });
     }
 
+    
+    public void updateGeneralInfo(int generalCredits, boolean isDoubleMajor) {
+        this.generalCredits = generalCredits;
+        this.isDoubleMajor = isDoubleMajor;
+    }
+
     // 결과 새로고침
     private void refreshResult() {
         List<String> messages = computeResult(this.fullId);
@@ -114,7 +124,7 @@ public class GraduationResultPage extends JPanel {
 
         List<Integer> courseIds = scc.loadStudentFile(fullId);
 
-        student.inputStudent(fullId, "컴공", false, 50, scc.getDepMgr());
+        student.inputStudent(fullId, "컴공", isDoubleMajor, generalCredits, scc.getDepMgr());
 
         
         if (courseIds != null && !courseIds.isEmpty()) {
@@ -143,7 +153,8 @@ public class GraduationResultPage extends JPanel {
         }
 
         String last = messages.get(messages.size() - 1); 
-        boolean pass = last.contains("졸업 가능합니다"); 
+        boolean pass = last.contains("졸업 가능합니다");
+        boolean hideFinalFail = true; // 졸업 실패 문장 숨김
 
         
         resultListPanel.removeAll();
@@ -167,7 +178,30 @@ public class GraduationResultPage extends JPanel {
 
             
             for (String msg : messages) {
-                JPanel row = createResultRow("•", msg, "");
+                // 학부 기초에 대한 문장에서 /0이면 메세지를 출력하지 않음
+                if (msg.contains("학부기초필수") || msg.contains("학부기초선택")) {
+                    
+                    if (msg.contains("/0과목")) {
+                        continue;
+                    }
+                }
+
+                // 마지막 성공 문장을 숨김
+                if (hideFinalFail && msg.contains("졸업 가능합니다! 축하합니다!")) {
+                    continue;
+                }
+
+                String title = msg;
+                String detail = "";
+                
+                int idx2 = msg.indexOf("충족");
+                
+                if (idx2 != -1) {
+                    title = msg.substring(0, idx2 + 2).trim();
+                    detail = msg.substring(idx2 + 2).trim();
+                }
+
+                JPanel row = createResultRow("•", title, detail);
                 resultListPanel.add(row, rowGbc);
                 rowGbc.gridy++;
             }
@@ -177,14 +211,24 @@ public class GraduationResultPage extends JPanel {
             guideLabel.setText("아래 부족한 항목을 채우면 졸업 요건을 만족할 수 있어요.");
 
             for (String msg : messages) {
-                // 부족 항목만 카드로 보여줌
-                if (!msg.contains("부족")) {
+                // 학부 기초에 대한 문장에서 /0이면 메세지를 출력하지 않음
+                if (msg.contains("학부기초필수") || msg.contains("학부기초선택")) {
+                    
+                    if (msg.contains("/0과목")) {
+                        continue;
+                    }
+                }
+
+                // 마지막 실패 문장은 숨김
+                if (hideFinalFail && msg.contains("졸업요건을 만족하지 못했습니다")) {
                     continue;
                 }
+                
 
                 String title = msg;
                 String detail = "";
                 int idx = msg.indexOf("부족");
+                
                 if (idx != -1) {
                     title = msg.substring(0, idx + 2).trim(); 
                     detail = msg.substring(idx + 2).trim();   

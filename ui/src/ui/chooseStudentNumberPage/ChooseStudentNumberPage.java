@@ -1,4 +1,4 @@
-package ui.chooseStudentNumberPage;
+package ui.ChooseStudentNumberPage;
 
 import javax.swing.*;
 import javax.swing.text.*;
@@ -66,7 +66,7 @@ public class ChooseStudentNumberPage extends JPanel {
         onYearSelected.accept(fullId);
 
         // 다음 페이지 이동
-        navigator.navigateTo(Pages.SELECT_COURSE_PAGE);
+        navigator.navigateTo(Pages.GENERAL_AND_DOUBLE_PAGE);
     }
 
     // 숫자만 입력 받도록

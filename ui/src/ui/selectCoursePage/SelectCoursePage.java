@@ -1,4 +1,4 @@
-package ui.selectCoursePage;
+package ui.SelectCoursePage;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -22,7 +22,7 @@ import ui.Pages;
 public class SelectCoursePage extends JPanel {
 
     private final PageNavigator navigator;     // 페이지 네비게이터
-    private final String fullId;               // 선택한 학번의 전체 ID (예: 202015071)
+    private final String fullId;               // 선택한 학번의 전체 ID
     private final List<Integer> selectedCourseIndexes = new ArrayList<>(); // 사용자가 선택한 과목 ID 목록    
     private final List<Course> courseList = new ArrayList<>(); // 전체 과목 리스트
     private final List<Course> selectedCourses = new ArrayList<>(); // 선택한 과목 리스트
@@ -220,52 +220,91 @@ public class SelectCoursePage extends JPanel {
         scrollPane.setBorder(new EmptyBorder(10, 0, 10, 0));  // 스크롤 패널 테두리
         centerPanel.add(scrollPane, BorderLayout.CENTER); // 패널에 스크롤 패널 추가
 
-        // 하단 버튼 선택
-        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-        bottomPanel.setOpaque(false);
+        // === 하단 버튼 영역 (좌/우 분리) ===
+        JPanel bottomWrapper = new JPanel(new BorderLayout());
+        bottomWrapper.setOpaque(false);
 
-        JButton addButton = new JButton("선택 과목 담기"); // 선택한 과목을 담는 버튼
-        JButton showButton = new JButton("지금까지 담은 전공 과목 보기"); // 지금까지 담은 과목을 console로 확인하는 버튼
-        JButton resultButton = new JButton("MSC 과목 담기"); // 졸업의 결과를 확인할 수 있는 페이지로 이동하는 버튼
+        // 왼쪽 (뒤로가기)
+        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        leftPanel.setOpaque(false);
 
-        stylePrimaryButton(addButton); // 주요 버튼 스타일
-        styleSecondaryButton(showButton); // 보조 버튼 스타일
-        stylePrimaryButton(resultButton); // 주요 버튼 스타일
+        // 오른쪽 (기존 버튼들)
+        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        rightPanel.setOpaque(false);
 
-        // 버튼 클릭 시 동작 연결
-        addButton.addActionListener(e -> addSelectedCourses()); // 선택한 과목을 누적
-        showButton.addActionListener(e -> printAccumulatedCourses()); // 지금까지 담은 과목 출력
+        // 버튼 생성
+        JButton backButton = new JButton("뒤로");
+        JButton deleteButton = new JButton("선택 과목 삭제");
+        JButton addButton = new JButton("선택 과목 담기");
+        JButton showButton = new JButton("지금까지 담은 전공 과목 보기");
+        JButton resultButton = new JButton("MSC 과목 담으러 가기");
+
+        styleBackButton(backButton);
+        stylePrimaryButton(deleteButton);
+        stylePrimaryButton(addButton);
+        styleSecondaryButton(showButton);
+        stylePrimaryButton(resultButton);
+        
+
+        // 이벤트
+        backButton.addActionListener(e -> {
+            navigator.navigateTo(Pages.GENERAL_AND_DOUBLE_PAGE);
+        });
+        deleteButton.addActionListener(e -> deleteSelectedCourses());
+        addButton.addActionListener(e -> addSelectedCourses());
+        showButton.addActionListener(e -> printAccumulatedCourses());
         resultButton.addActionListener(e -> {
-            navigator.navigateTo(Pages.SELECT_MSC_PAGE); // MSC 페이지로 이동
+            navigator.navigateTo(Pages.SELECT_MSC_PAGE);
         });
 
-        bottomPanel.add(addButton);
-        bottomPanel.add(showButton);
-        bottomPanel.add(resultButton);
+        // 패널에 추가
+        leftPanel.add(backButton);
 
-        cardPanel.add(bottomPanel, BorderLayout.SOUTH);
+        rightPanel.add(deleteButton);
+        rightPanel.add(addButton);
+        rightPanel.add(showButton);
+        rightPanel.add(resultButton);
+
+        bottomWrapper.add(leftPanel, BorderLayout.WEST);
+        bottomWrapper.add(rightPanel, BorderLayout.EAST);
+
+        cardPanel.add(bottomWrapper, BorderLayout.SOUTH);
     }
 
     
     // 버튼 스타일링
-    private void stylePrimaryButton(JButton button) {
+    public void stylePrimaryButton(JButton button) {
         button.setFont(new Font("나눔고딕", Font.BOLD, 14));
-        button.setForeground(new Color(0x111827));
-        button.setBackground(new Color(0x2563EB));
+        button.setBackground(new Color(0xE0F2FE));
+        button.setForeground(new Color(0x0F172A));
+        button.setBorder(new LineBorder(new Color(0x7DD3FC), 1, true));
+        button.setOpaque(true);
+        button.setContentAreaFilled(true);
         button.setFocusPainted(false);
-        button.setBorder(new LineBorder(new Color(0x1D4ED8), 1, true));
         button.setPreferredSize(new Dimension(150, 40));
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     }
 
     // 버튼 스타일링
-    private void styleSecondaryButton(JButton button) {
+    public void styleSecondaryButton(JButton button) {
         button.setFont(new Font("나눔고딕", Font.BOLD, 14));
         button.setForeground(new Color(0x111827));
         button.setBackground(new Color(0xE5E7EB));
         button.setFocusPainted(false);
         button.setBorder(new LineBorder(new Color(0xD1D5DB), 1, true));
         button.setPreferredSize(new Dimension(190, 40));
+        button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    }
+
+    public static void styleBackButton(JButton button) {
+        button.setFont(new Font("나눔고딕", Font.BOLD, 14));
+        button.setForeground(new Color(0x111827));
+        button.setBackground(new Color(0xE5E7EB));
+        button.setFocusPainted(false);
+        button.setBorder(new LineBorder(new Color(0xD1D5DB), 1, true));
+        button.setOpaque(true);
+        button.setContentAreaFilled(true);
+        button.setPreferredSize(new Dimension(80, 40));
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     }
     
@@ -332,6 +371,60 @@ public class SelectCoursePage extends JPanel {
         courseTable.repaint(); // 테이블을 다시 그림
     }
 
+    private void deleteSelectedCourses() {
+        int[] selectedRows = courseTable.getSelectedRows(); // 선택된 행 인덱스 배열
+
+        if (selectedRows.length == 0) {
+            System.out.println("삭제할 과목이 선택되지 않았습니다.");
+            return;
+        }
+
+        int deletedCount = 0;
+
+        for (int rowIndex : selectedRows) {
+            
+            Object value = tableModel.getValueAt(rowIndex, 0); // ID 값 가져오기
+            if (value == null) { // value가 없으면 넘어감
+                continue;
+            }
+
+            int courseId; // 과목 ID를 정의
+            try {
+                courseId = Integer.parseInt(value.toString()); // ID를 파싱을 해서 courseId에 삽입
+            } catch (NumberFormatException e) { // 오류가 발생하면
+                System.out.println("ID 파싱 오류(삭제): " + value); // 오류 출력하고
+                continue; // 넘어감
+            }
+
+            // 실제로 담긴 과목이 아니면 스킵
+            if (!selectedCourseIndexes.contains(courseId)) {
+                continue;
+            }
+
+            
+            // 학생 객체에서 과목 삭제
+            student.deleteCourse(courseId, scc.getCourseMgr());
+
+            
+            selectedCourseIndexes.remove(Integer.valueOf(courseId)); // 선택된 과목 ID 목록에서 제거
+            selectedCourses.removeIf(c -> c.getId() == courseId); // 선택한 과목 목록에서 제거
+
+            deletedCount++;
+            System.out.println("삭제한 과목 코드: " + courseId);
+        }
+
+        if (deletedCount == 0) {
+            System.out.println("실제로 삭제된 과목이 없습니다.");
+            return;
+        }
+
+        // 변경된 내역을 txt에 덮어쓰기
+        scc.saveStudentFile(student);
+
+        System.out.println("삭제된 과목: " + deletedCount + "개");
+        courseTable.repaint(); // 테이블을 다시 그림
+    }
+
     
     private void printAccumulatedCourses() {
         if (selectedCourses.isEmpty()) { // 담긴 과목이 없으면
@@ -340,10 +433,6 @@ public class SelectCoursePage extends JPanel {
         }
 
         System.out.println("=== 지금까지 담은 과목 목록 ===");
-        // for (Course c : selectedCourses) {
-            
-        //     System.out.println(c.toString()); // 과목 정보들을 출력
-        // }
 
         List<String> takenCourseList = student.getTakenMajorCourseList();
         for (String s : takenCourseList) {
