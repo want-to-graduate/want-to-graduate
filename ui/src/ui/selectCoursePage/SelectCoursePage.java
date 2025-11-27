@@ -240,7 +240,7 @@ public class SelectCoursePage extends JPanel {
         JButton resultButton = new JButton("MSC 과목 담으러 가기");
 
         styleBackButton(backButton);
-        styleSecondaryButton(deleteButton);
+        stylePrimaryButton(deleteButton);
         stylePrimaryButton(addButton);
         styleSecondaryButton(showButton);
         stylePrimaryButton(resultButton);
@@ -250,7 +250,7 @@ public class SelectCoursePage extends JPanel {
         backButton.addActionListener(e -> {
             navigator.navigateTo(Pages.CHOOSE_STUDENT_NUMBER_PAGE);
         });
-        // deleteButton.addActionListener(e -> student.deleteCourse(, scc.getCourseMgr()));
+        deleteButton.addActionListener(e -> deleteSelectedCourses());
         addButton.addActionListener(e -> addSelectedCourses());
         showButton.addActionListener(e -> printAccumulatedCourses());
         resultButton.addActionListener(e -> {
@@ -371,6 +371,60 @@ public class SelectCoursePage extends JPanel {
         courseTable.repaint(); // 테이블을 다시 그림
     }
 
+    private void deleteSelectedCourses() {
+        int[] selectedRows = courseTable.getSelectedRows(); // 선택된 행 인덱스 배열
+
+        if (selectedRows.length == 0) {
+            System.out.println("삭제할 과목이 선택되지 않았습니다.");
+            return;
+        }
+
+        int deletedCount = 0;
+
+        for (int rowIndex : selectedRows) {
+            
+            Object value = tableModel.getValueAt(rowIndex, 0); // ID 값 가져오기
+            if (value == null) { // value가 없으면 넘어감
+                continue;
+            }
+
+            int courseId; // 과목 ID를 정의
+            try {
+                courseId = Integer.parseInt(value.toString()); // ID를 파싱을 해서 courseId에 삽입
+            } catch (NumberFormatException e) { // 오류가 발생하면
+                System.out.println("ID 파싱 오류(삭제): " + value); // 오류 출력하고
+                continue; // 넘어감
+            }
+
+            // 실제로 담긴 과목이 아니면 스킵
+            if (!selectedCourseIndexes.contains(courseId)) {
+                continue;
+            }
+
+            
+            // 학생 객체에서 과목 삭제
+            student.deleteCourse(courseId, scc.getCourseMgr());
+
+            
+            selectedCourseIndexes.remove(Integer.valueOf(courseId));
+            selectedCourses.removeIf(c -> c.getId() == courseId);
+
+            deletedCount++;
+            System.out.println("삭제한 과목 코드: " + courseId);
+        }
+
+        if (deletedCount == 0) {
+            System.out.println("실제로 삭제된 과목이 없습니다.");
+            return;
+        }
+
+        // 변경된 내역을 txt에 덮어쓰기
+        scc.saveStudentFile(student);
+
+        System.out.println("삭제된 과목: " + deletedCount + "개");
+        courseTable.repaint(); // 테이블을 다시 그림
+    }
+
     
     private void printAccumulatedCourses() {
         if (selectedCourses.isEmpty()) { // 담긴 과목이 없으면
@@ -379,10 +433,6 @@ public class SelectCoursePage extends JPanel {
         }
 
         System.out.println("=== 지금까지 담은 과목 목록 ===");
-        // for (Course c : selectedCourses) {
-            
-        //     System.out.println(c.toString()); // 과목 정보들을 출력
-        // }
 
         List<String> takenCourseList = student.getTakenMajorCourseList();
         for (String s : takenCourseList) {

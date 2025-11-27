@@ -222,11 +222,13 @@ public class SelectMscCoursePage extends JPanel {
         rightPanel.setOpaque(false);
 
         JButton backButton = new JButton("뒤로");
+        JButton deleteButton = new JButton("선택 과목 삭제");
         JButton addButton = new JButton("MSC 과목 담기");
         JButton showButton = new JButton("지금까지 담은 MSC 과목 보기");
         JButton nextButton = new JButton("졸업 결과 보기");
 
         styleBackButton(backButton);
+        stylePrimaryButton(deleteButton);
         stylePrimaryButton(addButton);
         styleSecondaryButton(showButton);
         stylePrimaryButton(nextButton);
@@ -234,15 +236,16 @@ public class SelectMscCoursePage extends JPanel {
         backButton.addActionListener(e -> {
             navigator.navigateTo(Pages.SELECT_COURSE_PAGE);
         });
+        deleteButton.addActionListener(e -> deleteSelectedCourses());
         addButton.addActionListener(e -> addSelectedMscCourses());
         showButton.addActionListener(e -> printAccumulatedMscCourses());
-        
         nextButton.addActionListener(e -> {
             navigator.navigateTo(Pages.GRADUATION_RESULT_PAGE);
         });
 
         leftPanel.add(backButton);
 
+        rightPanel.add(deleteButton);
         rightPanel.add(addButton);
         rightPanel.add(showButton);
         rightPanel.add(nextButton);
@@ -332,6 +335,60 @@ public class SelectMscCoursePage extends JPanel {
 
         
         courseTable.repaint();
+    }
+
+    private void deleteSelectedCourses() {
+        int[] selectedRows = courseTable.getSelectedRows(); // 선택된 행 인덱스 배열
+
+        if (selectedRows.length == 0) {
+            System.out.println("삭제할 과목이 선택되지 않았습니다.");
+            return;
+        }
+
+        int deletedCount = 0;
+
+        for (int rowIndex : selectedRows) {
+            
+            Object value = tableModel.getValueAt(rowIndex, 0); // ID 값 가져오기
+            if (value == null) { // value가 없으면 넘어감
+                continue;
+            }
+
+            int courseId; // 과목 ID를 정의
+            try {
+                courseId = Integer.parseInt(value.toString()); // ID를 파싱을 해서 courseId에 삽입
+            } catch (NumberFormatException e) { // 오류가 발생하면
+                System.out.println("ID 파싱 오류(삭제): " + value); // 오류 출력하고
+                continue; // 넘어감
+            }
+
+            // 실제로 담긴 과목이 아니면 스킵
+            if (!selectedMscCourseIds.contains(courseId)) {
+                continue;
+            }
+
+            
+            // 학생 객체에서 과목 삭제
+            student.deleteCourse(courseId, scc.getCourseMgr());
+
+            
+            selectedMscCourseIds.remove(Integer.valueOf(courseId));
+            selectedMscCourses.removeIf(c -> c.getId() == courseId);
+
+            deletedCount++;
+            System.out.println("삭제한 과목 코드: " + courseId);
+        }
+
+        if (deletedCount == 0) {
+            System.out.println("실제로 삭제된 과목이 없습니다.");
+            return;
+        }
+
+        // 변경된 내역을 txt에 덮어쓰기
+        scc.saveStudentFile(student);
+
+        System.out.println("삭제된 과목: " + deletedCount + "개");
+        courseTable.repaint(); // 테이블을 다시 그림
     }
 
     private boolean isRowAlreadySelected(int rowIndex) {
