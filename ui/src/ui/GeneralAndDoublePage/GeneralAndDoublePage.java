@@ -133,7 +133,7 @@ public class GeneralAndDoublePage extends JPanel {
         JPanel rightButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         rightButtonPanel.setOpaque(false);
 
-        JButton backButton = new JButton("← 학번 다시 선택");
+        JButton backButton = new JButton("뒤로");
         JButton nextButton = new JButton("다음");
 
         styleSecondaryButton(backButton);
@@ -172,14 +172,14 @@ public class GeneralAndDoublePage extends JPanel {
     }
 
     private void styleSecondaryButton(JButton button) {
-        button.setFont(new Font("나눔고딕", Font.PLAIN, 13));
-        button.setForeground(new Color(0x374151));
-        button.setBackground(new Color(0xF9FAFB));
+        button.setFont(new Font("나눔고딕", Font.BOLD, 14));
+        button.setForeground(new Color(0x111827));
+        button.setBackground(new Color(0xE5E7EB));
+        button.setFocusPainted(false);
         button.setBorder(new LineBorder(new Color(0xD1D5DB), 1, true));
         button.setOpaque(true);
         button.setContentAreaFilled(true);
-        button.setFocusPainted(false);
-        button.setPreferredSize(new Dimension(150, 32));
+        button.setPreferredSize(new Dimension(80, 40));
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     }
 

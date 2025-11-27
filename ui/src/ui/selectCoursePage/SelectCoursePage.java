@@ -22,7 +22,7 @@ import ui.Pages;
 public class SelectCoursePage extends JPanel {
 
     private final PageNavigator navigator;     // 페이지 네비게이터
-    private final String fullId;               // 선택한 학번의 전체 ID (예: 202015071)
+    private final String fullId;               // 선택한 학번의 전체 ID
     private final List<Integer> selectedCourseIndexes = new ArrayList<>(); // 사용자가 선택한 과목 ID 목록    
     private final List<Course> courseList = new ArrayList<>(); // 전체 과목 리스트
     private final List<Course> selectedCourses = new ArrayList<>(); // 선택한 과목 리스트
@@ -248,7 +248,7 @@ public class SelectCoursePage extends JPanel {
 
         // 이벤트
         backButton.addActionListener(e -> {
-            navigator.navigateTo(Pages.CHOOSE_STUDENT_NUMBER_PAGE);
+            navigator.navigateTo(Pages.GENERAL_AND_DOUBLE_PAGE);
         });
         deleteButton.addActionListener(e -> deleteSelectedCourses());
         addButton.addActionListener(e -> addSelectedCourses());
