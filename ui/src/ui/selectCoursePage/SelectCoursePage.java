@@ -406,8 +406,8 @@ public class SelectCoursePage extends JPanel {
             student.deleteCourse(courseId, scc.getCourseMgr());
 
             
-            selectedCourseIndexes.remove(Integer.valueOf(courseId));
-            selectedCourses.removeIf(c -> c.getId() == courseId);
+            selectedCourseIndexes.remove(Integer.valueOf(courseId)); // 선택된 과목 ID 목록에서 제거
+            selectedCourses.removeIf(c -> c.getId() == courseId); // 선택한 과목 목록에서 제거
 
             deletedCount++;
             System.out.println("삭제한 과목 코드: " + courseId);
